@@ -1,0 +1,137 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { loadPreferences, savePreferences, addRecentCity, setUnit, toggleDarkMode } from '../storage.ts'
+import type { UserPreferences, City } from '@/types/index.ts'
+
+const mockCity: City = { name: 'Tokyo', lat: 35.68, lon: 139.69, country: 'Japan' }
+const mockCity2: City = { name: 'London', lat: 51.51, lon: -0.13, country: 'UK' }
+
+beforeEach(() => {
+  localStorage.clear()
+})
+
+describe('loadPreferences', () => {
+  it('returns defaults when no data stored', () => {
+    const prefs = loadPreferences()
+    expect(prefs.unitPreference).toBe('celsius')
+    expect(prefs.darkModeEnabled).toBe(false)
+    expect(prefs.recentCities).toEqual([])
+  })
+
+  it('loads saved preferences', () => {
+    const saved: UserPreferences = {
+      unitPreference: 'fahrenheit',
+      darkModeEnabled: true,
+      recentCities: [mockCity],
+    }
+    localStorage.setItem('nimbus-preferences', JSON.stringify(saved))
+
+    const prefs = loadPreferences()
+    expect(prefs.unitPreference).toBe('fahrenheit')
+    expect(prefs.darkModeEnabled).toBe(true)
+    expect(prefs.recentCities).toHaveLength(1)
+    expect(prefs.recentCities[0]!.name).toBe('Tokyo')
+  })
+
+  it('handles corrupted JSON gracefully', () => {
+    localStorage.setItem('nimbus-preferences', 'not json')
+    const prefs = loadPreferences()
+    expect(prefs.unitPreference).toBe('celsius')
+  })
+
+  it('caps recent cities at 5', () => {
+    const cities = Array.from({ length: 8 }, (_, i) => ({
+      name: `City${i}`, lat: i, lon: i, country: 'X',
+    }))
+    localStorage.setItem('nimbus-preferences', JSON.stringify({
+      recentCities: cities,
+    }))
+    const prefs = loadPreferences()
+    expect(prefs.recentCities).toHaveLength(5)
+  })
+
+  it('handles missing fields with defaults', () => {
+    localStorage.setItem('nimbus-preferences', JSON.stringify({}))
+    const prefs = loadPreferences()
+    expect(prefs.unitPreference).toBe('celsius')
+    expect(prefs.darkModeEnabled).toBe(false)
+    expect(prefs.recentCities).toEqual([])
+  })
+})
+
+describe('savePreferences', () => {
+  it('saves preferences to localStorage', () => {
+    const prefs: UserPreferences = {
+      unitPreference: 'fahrenheit',
+      darkModeEnabled: true,
+      recentCities: [mockCity],
+    }
+    savePreferences(prefs)
+    const stored = JSON.parse(localStorage.getItem('nimbus-preferences')!)
+    expect(stored.unitPreference).toBe('fahrenheit')
+  })
+
+  it('handles localStorage errors gracefully', () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceeded')
+    })
+    expect(() => savePreferences(loadPreferences())).not.toThrow()
+    vi.restoreAllMocks()
+  })
+})
+
+describe('addRecentCity', () => {
+  it('adds a city to the front', () => {
+    const prefs = loadPreferences()
+    const updated = addRecentCity(prefs, mockCity)
+    expect(updated.recentCities[0]!.name).toBe('Tokyo')
+  })
+
+  it('deduplicates by coordinates', () => {
+    const prefs: UserPreferences = {
+      ...loadPreferences(),
+      recentCities: [mockCity, mockCity2],
+    }
+    const updated = addRecentCity(prefs, mockCity) // re-add Tokyo
+    expect(updated.recentCities).toHaveLength(2)
+    expect(updated.recentCities[0]!.name).toBe('Tokyo')
+  })
+
+  it('caps at 5 cities', () => {
+    const prefs: UserPreferences = {
+      ...loadPreferences(),
+      recentCities: Array.from({ length: 5 }, (_, i) => ({
+        name: `City${i}`, lat: i, lon: i, country: 'X',
+      })),
+    }
+    const updated = addRecentCity(prefs, mockCity)
+    expect(updated.recentCities).toHaveLength(5)
+    expect(updated.recentCities[0]!.name).toBe('Tokyo')
+  })
+})
+
+describe('setUnit', () => {
+  it('updates unit preference', () => {
+    const prefs = loadPreferences()
+    const updated = setUnit(prefs, 'fahrenheit')
+    expect(updated.unitPreference).toBe('fahrenheit')
+  })
+
+  it('does not mutate original', () => {
+    const prefs = loadPreferences()
+    const updated = setUnit(prefs, 'fahrenheit')
+    expect(prefs.unitPreference).toBe('celsius')
+    expect(updated.unitPreference).toBe('fahrenheit')
+  })
+})
+
+describe('toggleDarkMode', () => {
+  it('toggles from false to true', () => {
+    const prefs = loadPreferences()
+    expect(toggleDarkMode(prefs).darkModeEnabled).toBe(true)
+  })
+
+  it('toggles from true to false', () => {
+    const prefs = { ...loadPreferences(), darkModeEnabled: true }
+    expect(toggleDarkMode(prefs).darkModeEnabled).toBe(false)
+  })
+})
