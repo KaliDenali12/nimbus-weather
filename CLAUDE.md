@@ -1,293 +1,292 @@
 # Nimbus Weather App — AI Codebase Guide
 
-Nimbus is a portfolio-grade, client-side weather application built with React, TypeScript, and Three.js. It uses Open-Meteo's free API for weather data (no API key required), renders an immersive 3D weather diorama as background, and applies dynamic theming based on real weather conditions. Designed to showcase craft for hiring managers — every detail (transitions, accessibility, error states, responsiveness) is polished.
+Portfolio-grade client-side weather app: React 19 + TypeScript 5.9 + Three.js + Open-Meteo. No backend, no API keys, no auth. Dynamic weather-driven theming with 3D diorama background.
+
+**Deploy**: https://test-feb26.netlify.app | **Repo**: https://github.com/KaliDenali12/nimbus-weather
+
+---
 
 ## Workflow Rules
 
-- **No backend**: Pure client-side app — all logic runs in the browser
-- **Open-Meteo only**: Free API, no keys, no rate limits to worry about
-- **localStorage for persistence**: User preferences + recent cities, nothing more
-- **3D is supporting, not central**: Atmospheric theming (colors + gradients) does the emotional heavy lifting; the 3D scene enhances but doesn't dominate
+- **Pure client-side** — all logic runs in the browser, zero server dependencies
+- **Open-Meteo only** — free API, no keys, no rate limits
+- **localStorage persistence** — user prefs + recent cities, nothing else
+- **3D is atmosphere, not content** — gradients + themes do emotional heavy lifting; 3D enhances
+- **No Shadcn/UI** — despite PRD mention, app uses custom glassmorphism components throughout
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18.x, TypeScript 5.x, Vite 5.x, Tailwind CSS 3.x |
-| UI Components | Shadcn/UI (accessible primitives) |
-| 3D Rendering | Three.js 0.162+, React Three Fiber 8.x, @react-three/drei 9.x |
-| Data Visualization | Recharts (temperature trend charts) |
-| Icons | Lucide React (18–48px stroke icons) |
-| CSS Utility | clsx for conditional classes |
-| Animation | Framer Motion (only if complexity stays low) |
-| Weather API | Open-Meteo (free, no API key) — Geocoding + Forecast endpoints |
-| Persistence | Browser localStorage |
-| Hosting | Netlify (static CDN) |
-| Testing | Vitest |
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| Framework | React + ReactDOM | 19.2.x |
+| Language | TypeScript (strict, erasableSyntaxOnly) | 5.9.x |
+| Bundler | Vite | 7.3.x |
+| Styling | Tailwind CSS + CSS custom properties | 3.4.x |
+| 3D | Three.js + @react-three/fiber + @react-three/drei | 0.175 / 9.1 / 10.0 |
+| Charts | Recharts | 2.15.x |
+| Icons | Lucide React | 0.511.x |
+| Animation | Framer Motion (minimal usage) | 12.12.x |
+| Testing | Vitest + @testing-library/react + jsdom | 3.2.x / 16.3.x |
+| Deploy | Netlify (static CDN, SPA redirect) | — |
 
 ## Project Structure
 
 ```
-Weather App/
-├── PRD.md/                    # Product specs (read-only reference)
-│   ├── Nimbus_Product_Vision.md
-│   ├── Nimbus_Feature_Set.md
-│   ├── Nimbus_User_Journey.md
-│   ├── Nimbus_Tech_Stack.md
-│   └── Nimbus_Design_Language_Guide.md
-├── src/
-│   ├── components/            # React UI components (Header, SearchBar, etc.)
-│   │   └── __tests__/         # Component tests
-│   ├── hooks/                 # Custom React hooks (useDebounce)
-│   │   └── __tests__/         # Hook tests
-│   ├── lib/                   # Utilities: api, theme, storage, units, weather-codes, geolocation
-│   │   └── __tests__/         # Unit tests for all lib modules
-│   ├── context/               # WeatherContext provider (app-wide state)
-│   ├── scenes/                # Three.js / R3F scene components (weather diorama)
-│   ├── types/                 # TypeScript type definitions
-│   ├── test/                  # Test setup (vitest + testing-library)
-│   └── App.tsx                # Root component with WeatherProvider
-├── public/                    # Static assets
-├── netlify.toml               # Netlify deployment config
-├── CLAUDE.md                  # This file
-├── .claude/memory/            # AI memory files
-└── .gitignore
+src/
+├── components/           # UI components (Header, SearchBar, CurrentWeather, etc.)
+│   └── __tests__/        # Component tests (WeatherIcon, Toast)
+├── scenes/               # Three.js / R3F 3D scene components
+│   ├── WeatherScene.tsx   # Canvas wrapper, lazy-loads SceneContent
+│   ├── SceneContent.tsx   # Main orchestrator: lighting, particles, objects
+│   ├── RainParticles.tsx  # BufferGeometry rain with fall animation
+│   ├── SnowParticles.tsx  # Slower particles with sine drift
+│   ├── SimpleCloud.tsx    # 4 overlapping spheres (custom, not drei Cloud)
+│   ├── Ground.tsx         # Weather-reactive colored plane
+│   └── DioramaObjects.tsx # Tree + House meshes, snow variant
+├── lib/                  # Pure utility modules
+│   ├── api.ts            # Open-Meteo geocoding + forecast
+│   ├── weather-codes.ts  # WMO code → condition/label/icon mapping
+│   ├── theme.ts          # 16 weather themes + dark mode override
+│   ├── storage.ts        # localStorage: prefs, recent cities (max 5)
+│   ├── units.ts          # Temp/wind conversion + day name formatting
+│   ├── geolocation.ts    # Browser geolocation with 8s timeout → Antarctica fallback
+│   └── __tests__/        # Unit tests for all lib modules
+├── context/
+│   └── WeatherContext.tsx # Single context: weather data + prefs + actions
+├── hooks/
+│   └── useDebounce.ts    # Generic debounce hook (300ms for search)
+├── types/
+│   ├── weather.ts        # All domain types (WeatherCondition, WeatherData, etc.)
+│   └── index.ts          # Barrel re-export
+├── test/
+│   └── setup.ts          # @testing-library/jest-dom setup
+├── App.tsx               # Root: WeatherProvider → WeatherApp layout
+├── main.tsx              # StrictMode + createRoot
+└── index.css             # Tailwind directives, CSS vars, glassmorphism classes
 ```
 
-## Build & Run Commands
+## Commands
 
 ```bash
-npm install                    # Install dependencies
-npm run dev                    # Start Vite dev server (localhost:5173)
-npm run build                  # Production build (tsc + vite build)
-npm run preview                # Preview production build locally
-npm run test                   # Run all 87 Vitest tests
-npm run test:watch             # Run tests in watch mode
-npm run test:coverage          # Run tests with coverage report
-netlify deploy --prod          # Deploy to Netlify (https://test-feb26.netlify.app)
+npm run dev               # Vite dev server (localhost:5173)
+npm run build             # tsc -b && vite build
+npm run preview           # Preview production build
+npm run test              # Vitest: 87 tests, 9 files, ~1.2s
+npm run test:watch        # Watch mode
+npm run test:coverage     # Coverage with @vitest/coverage-v8
+npm run lint              # ESLint 9 with TypeScript + React plugins
+netlify deploy --prod     # Deploy dist/ to Netlify
 ```
 
 ## Environment Variables
 
-**None required.** Open-Meteo API is free and keyless. No backend, no secrets.
+**None.** Open-Meteo is free and keyless. No backend, no secrets, no .env files.
 
-## Key Architectural Rules
-
-### Frontend
-
-- **Path alias**: `@/` maps to `src/`
-- **CSS framework**: Tailwind CSS 3.x with utility classes
-- **Theme**: Weather-driven dynamic theming via CSS custom properties + dark mode toggle override
-- **State management**: `useState` + `useContext` only — no external state library
-- **Routing**: Single-page app, no router needed
-- **Sensitive operations**: None — no API keys, no backend, no auth
+## Architecture
 
 ### Data Flow
 
-1. **On Load**: Browser geolocation → Open-Meteo API (coords) → Weather + forecast → Render UI + 3D + theme
-2. **Search**: User input → debounced geocoding (300ms, min 2 chars) → autocomplete → selection → full refresh
-3. **Preferences**: Unit toggle / dark mode → state update → localStorage persist
-4. **Return Visit**: Geolocation re-detect (fresh data) + localStorage restore (unit, dark mode, recent cities)
+```
+Geolocation/Search → Open-Meteo API → WeatherData → WeatherContext
+  ↓                                                     ↓
+  Fallback: Antarctica                    Components consume via useWeather()
+                                                        ↓
+                                          Theme applied → CSS custom properties
+                                          Prefs saved → localStorage
+```
+
+### State Management
+
+- **Global**: `WeatherContext` — weather data, loading, error, preferences, geoError, derived condition/timeOfDay
+- **Local**: Component-level state (SearchBar dropdown, AlertBanner dismissals, Toast visibility)
+- **Persistent**: `localStorage` key `nimbus-preferences` (unit, darkMode, recentCities)
+- **No external state library** — useState + useContext only
 
 ### Error Handling
 
-- Network failure → error card with "Try Again" button
-- Geolocation timeout (>8s) → fall back to Antarctica + friendly toast
-- No search results → "No cities found" in dropdown
-- Malformed API response → graceful error message + retry
+| Scenario | Behavior |
+|----------|----------|
+| Network failure | ErrorState card with "Try Again" button |
+| Geolocation denied/timeout/unavailable | Toast notification + Antarctica fallback |
+| Short search query (<2 chars) | Returns empty array, no API call |
+| Malformed localStorage | Silent catch, returns defaults |
+| No search results | "No cities found" in dropdown |
 
 ### Performance
 
-- Debounce search at 300ms
-- Optional 10–15 min client-side cache for API responses
-- Cap Three.js pixel ratio on mobile
-- Respect `prefers-reduced-motion`
-- Lazy-load Three.js bundle (stretch goal)
+- **Code splitting**: `three` chunk + `recharts` chunk + `SceneContent` lazy-loaded
+- **Debounce**: 300ms on search input via `useDebounce` hook
+- **Memoization**: `useMemo` for 3D scene calculations, `useCallback` for all context actions
+- **DPR cap**: `Math.min(window.devicePixelRatio, 2)` for WebGL
+- **Reduced motion**: `prefers-reduced-motion` disables all animations and transitions
 
 ## Conventions
 
-- **Imports**: Use `@/` alias with file extensions
-- **Types**: Export from feature type files, re-export via `types/index.ts`
-- **Components**: Named exports, functional components with hooks
-- **UI primitives**: Always use Shadcn/UI components (Button, Input, etc.)
-- **3D components**: React Three Fiber — 3D scene is a React component receiving weather state as props
+### Imports
 
-## Design System Standards
+- **Always use `@/` alias** with explicit file extensions: `import { useWeather } from '@/context/WeatherContext.tsx'`
+- **Type imports**: `import type { WeatherData } from '@/types/index.ts'`
+- **Barrel exports**: Types from `types/index.ts`, everything else from source
 
-> Do NOT deviate from these values when writing new UI or editing existing UI.
+### TypeScript
 
-### Theming — Weather-Driven Colors
+- **Strict mode** with `noUnusedLocals`, `noUnusedParameters`
+- **`erasableSyntaxOnly: true`** — no parameter properties, no enums, no namespaces. Declare class fields explicitly and assign in constructor body.
+- **Discriminated unions** for result types (e.g., geolocation `{ ok: true; position } | { ok: false; error }`)
+- **Named exports** everywhere — no default exports
 
-No fixed brand palette. The entire UI shifts based on weather condition + time of day:
+### Components
 
-| Weather State | Gradient | Text |
-|---------------|----------|------|
-| Clear (Day) | #1e5faa → #8bbaf0 | White |
-| Clear (Night) | #0b1224 → #2b2670 | Light gray |
-| Cloudy (Day) | #5a6a7a → #b0bec9 | White |
-| Rain | Deep blue-gray | Muted |
-| Snow (Day) | #d8e4ee → #8a9baa | Dark |
-| Storm | #12121f → #323252 | Muted |
-| Dark Mode (override) | #09090b → #27272a | Standard |
+- Functional components with hooks only
+- Named exports (not default)
+- CSS via Tailwind utilities + glassmorphism classes from `index.css`
+- ARIA attributes on all interactive elements
 
-### Card Glassmorphism
+### File Naming
 
-- Background: `rgba(255, 255, 255, 0.07–0.16)` (weather-specific)
-- Border: `1px solid rgba(255, 255, 255, 0.06–0.12)`
-- Blur: `backdrop-filter: blur(16px)`
+- Components: `PascalCase.tsx` (e.g., `WeatherIcon.tsx`)
+- Utilities: `kebab-case.ts` (e.g., `weather-codes.ts`)
+- Tests: `__tests__/<ModuleName>.test.ts(x)` colocated with source
+- Constants: `UPPER_SNAKE_CASE` (e.g., `ANTARCTICA`, `GEOLOCATION_TIMEOUT`)
+
+## Design System
+
+> These values are baked into the codebase. Do NOT deviate when writing new UI.
+
+### Dynamic Theming
+
+16 themes (8 weather conditions x day/night) + dark mode override. Theme applied via CSS custom properties on `:root`:
+
+| Variable | Role |
+|----------|------|
+| `--bg-gradient` | Full-page background gradient |
+| `--card-surface` | Glassmorphism card background (rgba) |
+| `--card-border` | Glassmorphism card border (rgba) |
+| `--text-primary` | Primary text color |
+| `--text-secondary` | Secondary/muted text color |
+| `--color-success/warning/error/info` | Semantic status colors (static) |
+
+**Dark mode**: When enabled, overrides ALL weather themes with a single charcoal theme (`#09090b → #27272a`).
+
+### Glassmorphism Classes
+
+| Class | Key Properties |
+|-------|---------------|
+| `.glass-card` | blur(16px), border-radius: 16px, padding: 20px |
+| `.glass-button` | bg: white/10%, border-radius: 10px, hover: white/18% |
+| `.glass-chip` | border-radius: 20px (pill), padding: 6px 14px |
+| `.glass-input` | blur(12px), border-radius: 14px, padding: 14px 16px |
 
 ### Typography
 
-| Element | Font | Size | Weight |
-|---------|------|------|--------|
-| Display XL (temperature) | Bricolage Grotesque | 64px | 800 |
-| Display LG (city name) | Bricolage Grotesque | 36px | 700 |
-| Heading 1 | Bricolage Grotesque | 26px | 800 |
-| Heading 2 | Bricolage Grotesque | 20px | 700 |
-| Body | Figtree | 15px | 400 |
-| Body SM | Figtree | 13px | 400 |
-| Label | Figtree | 13px | 600 |
-| Caption | Figtree | 11px | 500 |
-
-Font source: Google Fonts with `display=swap`
-
-### Border Radius
-
-| Context | Value |
-|---------|-------|
-| Cards | 16px |
-| Buttons | 10px |
-| Search input | 14px |
-| Chips | 20px (pill) |
-| Dropdown/Toast | 12px |
+| Token | Font | Size | Weight |
+|-------|------|------|--------|
+| display-xl | Bricolage Grotesque | 64px | 800 |
+| display-lg | Bricolage Grotesque | 36px | 700 |
+| heading-1 | Bricolage Grotesque | 26px | 800 |
+| heading-2 | Bricolage Grotesque | 20px | 700 |
+| body | Figtree | 15px | 400 |
+| body-sm | Figtree | 13px | 400 |
+| label | Figtree | 13px | 600 |
+| caption | Figtree | 11px | 500 |
 
 ### Spacing (4px Grid)
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| space-1 | 4px | Tight internal padding |
-| space-3 | 12px | Chip padding, compact gaps |
-| space-4 | 16px | Standard spacing, input padding |
-| space-5 | 20px | Card internal padding |
-| space-6 | 24px | Between sections (mobile) |
-| space-10 | 40px | Page top/bottom padding |
+Card padding: 20px. Card gap: 12–16px. Page padding: 16px mobile / 24px desktop. Max width: 900px.
 
-Key: Card padding = 20px, card gap = 12–16px, page padding = 16px mobile / 24px desktop, max width = 900px.
+### Border Radius
+
+Cards: 16px. Buttons: 10px. Search: 14px. Chips: 20px. Dropdown/Toast: 12px.
 
 ### Transitions
 
-| Speed | Duration | Usage |
-|-------|----------|-------|
-| Fast | 150ms ease | Hovers, small interactions |
-| Normal | 200ms ease | Button clicks, chip interactions |
-| Slow | 600ms ease | Weather theme transitions |
-| Extra Slow | 800ms ease | Background gradient transitions |
+Fast: 150ms. Normal: 200ms. Slow: 600ms (theme). Extra slow: 800ms (background gradient).
 
-## Accessibility Standards
+## Accessibility
 
-### Interactive Elements
-Any non-interactive element with onClick must have: `role="button"`, `tabIndex={0}`, `onKeyDown` for Enter/Space, `focus-visible` outline.
-
-### Icon-Only Buttons
-Must have `aria-label`.
-
-### Touch Targets
-Minimum 44px on all interactive elements.
-
-### Reduced Motion
-Respect `prefers-reduced-motion` — disable 3D animations, particle effects, and non-essential transitions.
-
-### Responsive Breakpoints
-- Mobile: <640px
-- Tablet: 640–899px
-- Desktop: 900px+
+- **Icon-only buttons**: Must have `aria-label`
+- **Decorative icons**: `aria-hidden="true"`
+- **Touch targets**: Minimum 44px
+- **Keyboard nav**: SearchBar supports ArrowUp/Down/Enter/Escape with combobox ARIA pattern
+- **Focus indicators**: `focus-visible` with white outline on all interactive elements
+- **Reduced motion**: `prefers-reduced-motion` media query disables all animations
+- **Live regions**: Toast has `role="status"`, loading has `aria-live`
+- **3D scene**: `role="img"` with `aria-label` on canvas wrapper
 
 ## Data Model
 
-### localStorage Schema
+### localStorage Schema (`nimbus-preferences`)
 
 ```typescript
 interface UserPreferences {
-  unitPreference: "celsius" | "fahrenheit";
-  darkModeEnabled: boolean;
-  recentCities: Array<{
-    name: string;
-    lat: number;
-    lon: number;
-    country: string;
-  }>; // max 5, FIFO with deduplication
+  unitPreference: 'celsius' | 'fahrenheit'
+  darkModeEnabled: boolean
+  recentCities: City[] // max 5, FIFO with lat/lon dedup
 }
 ```
 
-### Open-Meteo API
+### Open-Meteo Endpoints
 
-- **Geocoding**: City name → `{ name, lat, lon, country, admin1 }[]`
-- **Forecast**: lat/lon → `{ current: { temp, humidity, wind, feelsLike, weatherCode }, daily: { date, high, low, weatherCode }[], alerts: [] }`
+- **Geocoding**: `geocoding-api.open-meteo.com/v1/search?name=<query>&count=8`
+- **Forecast**: `api.open-meteo.com/v1/forecast?latitude=<lat>&longitude=<lon>&current=...&daily=...`
+- Free tier: no alerts, no historical data, no hourly breakdown
 
-## Auth & Roles
+### WMO Weather Code Mapping
 
-**None.** Fully public client-side app. No user accounts, no auth, no roles.
-
-## Core Workflow
-
-1. User opens app → browser requests geolocation
-2. Coords sent to Open-Meteo → weather data returned
-3. UI renders: 3D scene + dynamic theme + weather cards + forecast + chart
-4. User searches a city → debounced autocomplete → selection triggers full refresh
-5. City saved to recent cities (localStorage, max 5)
-6. User toggles °C/°F or dark mode → persisted to localStorage
-7. On return visit: geolocation re-detects, preferences restored
+0→clear, 1-3→partly-cloudy, 45-48→foggy, 51-57→drizzle, 61-67→rain, 71-77→snow, 80-84→rain, 85-86→snow, 95-99→storm. All other codes→cloudy.
 
 ## Common Recipes
 
 ### Adding a New Weather Scene Variant
-1. Add WMO code mapping in the theme config (weather code → CSS variables + scene props)
-2. Create/update R3F scene component in `src/scenes/`
-3. Update the scene selector to handle the new weather code
-4. Test with mock data for the specific condition
+1. Map WMO codes in `lib/weather-codes.ts`
+2. Add theme colors in `lib/theme.ts`
+3. Create/update R3F component in `scenes/`
+4. Add conditional rendering in `SceneContent.tsx`
+5. Test with mock data for the condition
 
 ### Adding a New Weather Data Card
-1. Create component in `src/components/` using glassmorphism card pattern
-2. Extract data from the weather API response via existing hooks
-3. Add to the main layout grid
-4. Ensure responsive behavior at all breakpoints
-5. Add unit tests for data formatting logic
+1. Create component in `components/` using `.glass-card` class
+2. Consume data via `useWeather()` hook
+3. Add to layout grid in `App.tsx`
+4. Ensure responsive behavior (mobile-first)
+5. Add unit tests
 
-## What's Not Yet Implemented
+### Adding a New Utility Function
+1. Add to appropriate `lib/*.ts` file
+2. Export types from `types/weather.ts` if needed
+3. Write unit tests in `lib/__tests__/`
+4. Pure functions preferred — no side effects
 
-All mandatory MVP features are built. The following are "possible/stretch" features from the PRD:
+## What's Not Implemented
+
+All mandatory MVP features are complete. Stretch features from the PRD:
 - Service worker / offline support
 - Share button / URL-based city routing
 - Weather-appropriate greetings
 - Antarctica Easter egg (penguin in 3D scene)
-- Animated number transitions on city switch
+- Animated number transitions
 - Hourly forecast breakdown
 - Sunrise/sunset, UV index, pressure, visibility
-- System dark mode preference detection (`prefers-color-scheme`)
+- `prefers-color-scheme` system dark mode detection
 - Performance toggle to disable 3D scene
-- Weather alerts (API doesn't provide them on free tier — UI is ready)
+- Weather alerts (Open-Meteo free tier lacks alert data — UI component exists)
+
+## Known Gotchas
+
+1. **erasableSyntaxOnly** — Cannot use `public status?: number` in constructor params. Must declare field explicitly and assign in constructor body. Also blocks enums and namespaces.
+2. **@react-three/drei v10** — `Cloud` component API changed (no `width`/`depth`/`segments` props). We use custom `SimpleCloud` (overlapping spheres) instead.
+3. **R3F v9 bufferAttribute** — Requires `args` prop in JSX. We use programmatic `new THREE.BufferAttribute()` instead.
+4. **TypeScript narrowing with derived booleans** — After `const isRain = condition === 'rain'`, TS can't narrow `condition` further. Restructure conditionals to avoid.
+5. **`vi.useFakeTimers()` + `userEvent`** — Causes timeouts. Use `fireEvent` instead in tests with fake timers.
+6. **Open-Meteo free tier** — No weather alerts, no hourly data, no historical. AlertBanner component exists but `alerts` array is always empty.
 
 ## Documentation Hierarchy
 
-When you learn something worth preserving, put it in the right place:
+| Layer | Loaded | Content |
+|-------|--------|---------|
+| **CLAUDE.md** (this file) | Every conversation | Rules, conventions, architecture |
+| **MEMORY.md** | Every conversation | Project state, cross-cutting patterns |
+| **Sub-memory files** (.claude/memory/) | On demand | Feature-deep-dives — see MEMORY.md index |
+| **Inline comments** | When code is read | Non-obvious "why" explanations |
 
-| Layer | Loaded | What goes here |
-|-------|--------|---------------|
-| **CLAUDE.md** (this file) | Every conversation | Rules/constraints that prevent mistakes on ANY task |
-| **Auto-memory MEMORY.md** | Every conversation | Cross-cutting patterns and pitfalls learned across sessions |
-| **Sub-memory files** (.claude/memory/) | On demand, by topic | Feature-specific deep dives — see topic table below |
-| **Inline code comments** | When code is read | Non-obvious "why" explanations, right next to the code |
-
-**Rule of thumb**: If it prevents mistakes on unrelated tasks → CLAUDE.md. If it's a pattern/pitfall that spans features → auto-memory. If it's only relevant when working on one feature → sub-memory file. If it explains a single non-obvious line → inline comment.
-
-**Updating docs**: When you change code that affects a rule in CLAUDE.md, update CLAUDE.md. When you change a feature covered by a sub-memory file, update that file. If a new feature area doesn't fit any existing file, create a new one and add it to the table below.
-
-### Sub-Memory Files — Load When Working On
-
-| File | When to load |
-|------|-------------|
-| testing.md | Writing or fixing tests |
-| three-js.md | Working on 3D scenes or R3F components |
-| theming.md | Modifying weather-driven theme or dark mode |
-| api-integration.md | Working with Open-Meteo API calls |
-| accessibility.md | Fixing a11y issues or adding ARIA patterns |
+**Rule**: Prevents mistakes on any task → CLAUDE.md. Cross-cutting pattern → MEMORY.md. Single-feature deep dive → sub-memory file. Single non-obvious line → inline comment.
