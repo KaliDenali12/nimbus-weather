@@ -35,15 +35,20 @@ Weather App/
 │   ├── Nimbus_User_Journey.md
 │   ├── Nimbus_Tech_Stack.md
 │   └── Nimbus_Design_Language_Guide.md
-├── src/                       # TODO: Source code (not yet created)
-│   ├── components/            # React components
-│   ├── hooks/                 # Custom React hooks
-│   ├── lib/                   # Utilities, API clients, constants
-│   ├── context/               # React Context providers (theme, preferences)
-│   ├── scenes/                # Three.js / R3F scene components
+├── src/
+│   ├── components/            # React UI components (Header, SearchBar, etc.)
+│   │   └── __tests__/         # Component tests
+│   ├── hooks/                 # Custom React hooks (useDebounce)
+│   │   └── __tests__/         # Hook tests
+│   ├── lib/                   # Utilities: api, theme, storage, units, weather-codes, geolocation
+│   │   └── __tests__/         # Unit tests for all lib modules
+│   ├── context/               # WeatherContext provider (app-wide state)
+│   ├── scenes/                # Three.js / R3F scene components (weather diorama)
 │   ├── types/                 # TypeScript type definitions
-│   └── App.tsx                # Root component
+│   ├── test/                  # Test setup (vitest + testing-library)
+│   └── App.tsx                # Root component with WeatherProvider
 ├── public/                    # Static assets
+├── netlify.toml               # Netlify deployment config
 ├── CLAUDE.md                  # This file
 ├── .claude/memory/            # AI memory files
 └── .gitignore
@@ -52,13 +57,14 @@ Weather App/
 ## Build & Run Commands
 
 ```bash
-# TODO: Commands will be available after project initialization
 npm install                    # Install dependencies
-npm run dev                    # Start Vite dev server
-npm run build                  # Production build
-npm run preview                # Preview production build
-npm run test                   # Run Vitest
-npm run test -- --coverage     # Run tests with coverage
+npm run dev                    # Start Vite dev server (localhost:5173)
+npm run build                  # Production build (tsc + vite build)
+npm run preview                # Preview production build locally
+npm run test                   # Run all 87 Vitest tests
+npm run test:watch             # Run tests in watch mode
+npm run test:coverage          # Run tests with coverage report
+netlify deploy --prod          # Deploy to Netlify (https://test-feb26.netlify.app)
 ```
 
 ## Environment Variables
@@ -249,7 +255,17 @@ interface UserPreferences {
 
 ## What's Not Yet Implemented
 
-**This project is in the specification phase.** No source code exists yet. All PRD documents are in `PRD.md/`. Implementation should follow the tech stack and patterns defined in this file.
+All mandatory MVP features are built. The following are "possible/stretch" features from the PRD:
+- Service worker / offline support
+- Share button / URL-based city routing
+- Weather-appropriate greetings
+- Antarctica Easter egg (penguin in 3D scene)
+- Animated number transitions on city switch
+- Hourly forecast breakdown
+- Sunrise/sunset, UV index, pressure, visibility
+- System dark mode preference detection (`prefers-color-scheme`)
+- Performance toggle to disable 3D scene
+- Weather alerts (API doesn't provide them on free tier — UI is ready)
 
 ## Documentation Hierarchy
 

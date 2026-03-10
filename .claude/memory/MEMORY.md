@@ -4,9 +4,10 @@ Nimbus: Portfolio-grade client-side weather app (React + Three.js + Open-Meteo).
 
 ## Current State
 
-- **Test count**: 0 (pre-development)
-- **Deploy URL**: TBD
-- **Last major change**: Initial setup — PRD documents created, no source code yet
+- **Test count**: 87 (9 test files, all passing)
+- **Deploy URL**: https://test-feb26.netlify.app
+- **GitHub**: https://github.com/KaliDenali12/nimbus-weather
+- **Last major change**: Full MVP implementation — all mandatory features built and deployed
 
 ## Topic Files
 
