@@ -2,6 +2,9 @@ import type { GeocodingResult, WeatherData, DailyForecast, CurrentWeather } from
 
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
+const GEOCODING_RESULT_LIMIT = 8
+const FORECAST_DAYS = 6 // today + 5 days
+const MIN_SEARCH_QUERY_LENGTH = 2
 
 export class ApiError extends Error {
   status?: number
@@ -13,11 +16,11 @@ export class ApiError extends Error {
 }
 
 export async function searchCities(query: string): Promise<GeocodingResult[]> {
-  if (query.trim().length < 2) return []
+  if (query.trim().length < MIN_SEARCH_QUERY_LENGTH) return []
 
   const url = new URL(GEOCODING_URL)
   url.searchParams.set('name', query.trim())
-  url.searchParams.set('count', '8')
+  url.searchParams.set('count', GEOCODING_RESULT_LIMIT.toString())
   url.searchParams.set('language', 'en')
   url.searchParams.set('format', 'json')
 
@@ -46,7 +49,7 @@ export async function fetchWeather(
     'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max',
   )
   url.searchParams.set('timezone', 'auto')
-  url.searchParams.set('forecast_days', '6') // today + 5 days
+  url.searchParams.set('forecast_days', FORECAST_DAYS.toString())
 
   const res = await fetch(url.toString())
   if (!res.ok) throw new ApiError('Failed to fetch weather data', res.status)
