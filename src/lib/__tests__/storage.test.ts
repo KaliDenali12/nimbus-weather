@@ -105,6 +105,23 @@ describe('addRecentCity', () => {
     expect(updated.recentCities[0]!.name).toBe('Tokyo')
   })
 
+  it('does not remove cities that share only lat or only lon', () => {
+    // Cities share lat but differ in lon — both should be kept
+    const sameLatCity: City = { name: 'SameLat', lat: 35.68, lon: 0, country: 'X' }
+    // Cities share lon but differ in lat — both should be kept
+    const sameLonCity: City = { name: 'SameLon', lat: 0, lon: 139.69, country: 'X' }
+    const prefs: UserPreferences = {
+      ...loadPreferences(),
+      recentCities: [sameLatCity, sameLonCity],
+    }
+    const updated = addRecentCity(prefs, mockCity) // Tokyo: lat=35.68, lon=139.69
+    // All 3 should be present — dedup requires BOTH lat AND lon to match
+    expect(updated.recentCities).toHaveLength(3)
+    expect(updated.recentCities[0]!.name).toBe('Tokyo')
+    expect(updated.recentCities.find(c => c.name === 'SameLat')).toBeDefined()
+    expect(updated.recentCities.find(c => c.name === 'SameLon')).toBeDefined()
+  })
+
   it('caps at 5 cities', () => {
     const prefs: UserPreferences = {
       ...loadPreferences(),
