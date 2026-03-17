@@ -128,10 +128,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
 
   const selectCity = useCallback(
     (city: City) => {
-      setPreferences((prev) => {
-        const updated = addRecentCity(prev, city)
-        return updated
-      })
+      setPreferences((prev) => addRecentCity(prev, city))
       loadWeatherForCoords(city.lat, city.lon, city.name, city.country)
     },
     [loadWeatherForCoords],
