@@ -6,6 +6,37 @@ const GEOCODING_RESULT_LIMIT = 8
 const FORECAST_DAYS = 6 // today + 5 days
 const MIN_SEARCH_QUERY_LENGTH = 2
 
+/** Raw shape of the Open-Meteo geocoding API response */
+interface GeocodingApiResponse {
+  results?: GeocodingResult[]
+}
+
+/** Raw shape of the Open-Meteo forecast API "current" block */
+interface ForecastCurrentBlock {
+  temperature_2m: number
+  apparent_temperature: number
+  relative_humidity_2m: number
+  wind_speed_10m: number
+  weather_code: number
+  is_day: number
+}
+
+/** Raw shape of the Open-Meteo forecast API "daily" block */
+interface ForecastDailyBlock {
+  time: string[]
+  weather_code: number[]
+  temperature_2m_max: number[]
+  temperature_2m_min: number[]
+  precipitation_probability_max?: number[]
+}
+
+/** Raw shape of the Open-Meteo forecast API response */
+interface ForecastApiResponse {
+  current: ForecastCurrentBlock
+  daily: ForecastDailyBlock
+  timezone?: string
+}
+
 export class ApiError extends Error {
   status?: number
   constructor(message: string, status?: number) {
@@ -27,8 +58,8 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
   const res = await fetch(url.toString())
   if (!res.ok) throw new ApiError('Failed to search cities', res.status)
 
-  const data = await res.json()
-  return (data.results ?? []) as GeocodingResult[]
+  const data: GeocodingApiResponse = await res.json()
+  return data.results ?? []
 }
 
 export async function fetchWeather(
@@ -54,7 +85,7 @@ export async function fetchWeather(
   const res = await fetch(url.toString())
   if (!res.ok) throw new ApiError('Failed to fetch weather data', res.status)
 
-  const data = await res.json()
+  const data: ForecastApiResponse = await res.json()
 
   const current: CurrentWeather = {
     temperature: data.current.temperature_2m,
@@ -105,11 +136,11 @@ export async function reverseGeocode(
   try {
     const res = await fetch(url.toString())
     if (!res.ok) return null
-    const data = await res.json()
+    const data: GeocodingApiResponse = await res.json()
     const result = data.results?.[0]
     if (result) return { name: result.name, country: result.country ?? '' }
   } catch {
-    // Silently fail — we'll use fallback naming
+    // Non-critical: reverse geocode is a best-effort enhancement for location names
   }
   return null
 }

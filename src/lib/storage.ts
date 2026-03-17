@@ -10,24 +10,35 @@ const DEFAULTS: UserPreferences = {
 }
 
 function getSystemDarkMode(): boolean {
-  return typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false
+  return window.matchMedia('(prefers-color-scheme: dark)')?.matches ?? false
 }
 
 export function loadPreferences(): UserPreferences {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return { ...DEFAULTS, darkModeEnabled: getSystemDarkMode() }
-    const parsed = JSON.parse(raw) as Partial<UserPreferences>
+    const parsed: unknown = JSON.parse(raw)
+    if (typeof parsed !== 'object' || parsed === null) {
+      return { ...DEFAULTS, darkModeEnabled: getSystemDarkMode() }
+    }
+    const obj = parsed as Record<string, unknown>
     return {
-      unitPreference: parsed.unitPreference ?? DEFAULTS.unitPreference,
-      darkModeEnabled: parsed.darkModeEnabled ?? DEFAULTS.darkModeEnabled,
-      recentCities: Array.isArray(parsed.recentCities)
-        ? parsed.recentCities.slice(0, MAX_RECENT_CITIES)
+      unitPreference:
+        obj.unitPreference === 'celsius' || obj.unitPreference === 'fahrenheit'
+          ? obj.unitPreference
+          : DEFAULTS.unitPreference,
+      darkModeEnabled:
+        typeof obj.darkModeEnabled === 'boolean'
+          ? obj.darkModeEnabled
+          : DEFAULTS.darkModeEnabled,
+      recentCities: Array.isArray(obj.recentCities)
+        ? (obj.recentCities as City[]).slice(0, MAX_RECENT_CITIES)
         : [],
     }
   } catch {
-    return { ...DEFAULTS }
+    // Corrupted or unreadable localStorage — fall back to defaults with system dark mode
+    return { ...DEFAULTS, darkModeEnabled: getSystemDarkMode() }
   }
 }
 

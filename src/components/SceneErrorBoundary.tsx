@@ -1,4 +1,4 @@
-import { Component, type ReactNode } from 'react'
+import { Component, type ErrorInfo, type ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
@@ -13,6 +13,12 @@ export class SceneErrorBoundary extends Component<Props, State> {
 
   static getDerivedStateFromError(): State {
     return { hasError: true }
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo): void {
+    // Log 3D scene errors for debugging; the gradient background remains visible as fallback.
+    // In production, this would be sent to an error reporting service.
+    console.error('[SceneErrorBoundary] 3D scene crashed:', error, info.componentStack)
   }
 
   render() {
