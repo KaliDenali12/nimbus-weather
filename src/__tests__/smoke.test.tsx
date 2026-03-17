@@ -171,7 +171,7 @@ describe('Smoke Tests', () => {
     render(<App />)
 
     await waitFor(() => {
-      expect(screen.getByText('Something went wrong')).toBeInTheDocument()
+      expect(screen.getByText('Weather Unavailable')).toBeInTheDocument()
     })
 
     expect(screen.getByText('Try Again')).toBeInTheDocument()

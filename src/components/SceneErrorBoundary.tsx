@@ -18,7 +18,11 @@ export class SceneErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, info: ErrorInfo): void {
     // Log 3D scene errors for debugging; the gradient background remains visible as fallback.
     // In production, this would be sent to an error reporting service.
-    console.error('[SceneErrorBoundary] 3D scene crashed:', error, info.componentStack)
+    console.error(
+      '[SceneErrorBoundary] WebGL/3D scene crashed — falling back to gradient background.',
+      '\n  Error:', error.message,
+      '\n  Component stack:', info.componentStack,
+    )
   }
 
   render() {

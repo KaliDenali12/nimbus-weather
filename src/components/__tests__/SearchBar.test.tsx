@@ -98,7 +98,7 @@ describe('SearchBar', () => {
     act(() => { vi.advanceTimersByTime(300) })
     await flushMicrotasks()
 
-    expect(screen.getByText('No cities found')).toBeInTheDocument()
+    expect(screen.getByText('No cities found. Try a different spelling or a nearby city.')).toBeInTheDocument()
   })
 
   it('selects a city and calls selectCity', async () => {

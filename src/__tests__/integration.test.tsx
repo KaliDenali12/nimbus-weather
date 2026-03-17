@@ -171,7 +171,7 @@ describe('Integration: Full User Workflow', () => {
     })
 
     expect(screen.getByRole('status')).toBeInTheDocument()
-    expect(screen.getByText(/Location access denied/)).toBeInTheDocument()
+    expect(screen.getByText(/Location access was not granted/)).toBeInTheDocument()
   })
 
   it('API failure → shows error → retry succeeds', async () => {
@@ -185,9 +185,9 @@ describe('Integration: Full User Workflow', () => {
     render(<App />)
 
     await waitFor(() => {
-      expect(screen.getByText('Something went wrong')).toBeInTheDocument()
+      expect(screen.getByText('Weather Unavailable')).toBeInTheDocument()
     })
-    expect(screen.getByText('Server down')).toBeInTheDocument()
+    expect(screen.getByText('Unable to fetch weather data. Please check your connection and try again.')).toBeInTheDocument()
 
     // Fix the API and retry
     vi.mocked(fetchWeather).mockResolvedValue(tokyoWeather)

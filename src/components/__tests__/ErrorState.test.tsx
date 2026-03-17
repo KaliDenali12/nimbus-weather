@@ -21,7 +21,7 @@ beforeEach(() => {
 describe('ErrorState', () => {
   it('renders the error heading', () => {
     render(<ErrorState />)
-    expect(screen.getByText('Something went wrong')).toBeInTheDocument()
+    expect(screen.getByText('Weather Unavailable')).toBeInTheDocument()
   })
 
   it('displays the error message from context', () => {
@@ -33,7 +33,7 @@ describe('ErrorState', () => {
     mockError = null
     render(<ErrorState />)
     expect(
-      screen.getByText('Unable to fetch weather data. Check your connection and try again.'),
+      screen.getByText('Unable to fetch weather data. Please check your connection and try again.'),
     ).toBeInTheDocument()
   })
 

@@ -150,7 +150,9 @@ export function SearchBar() {
         >
           {results.length === 0 && !loading && (
             <li className="px-4 py-3 text-body-sm text-secondary">
-              {searchError ? 'Search failed — check your connection' : 'No cities found'}
+              {searchError
+                ? 'Search failed. Please check your connection and try again.'
+                : 'No cities found. Try a different spelling or a nearby city.'}
             </li>
           )}
           {results.map((result, index) => (

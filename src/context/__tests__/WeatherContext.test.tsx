@@ -165,7 +165,7 @@ describe('WeatherContext', () => {
       expect(screen.getByTestId('loading').textContent).toBe('false')
     })
 
-    expect(screen.getByTestId('error').textContent).toBe('Network error')
+    expect(screen.getByTestId('error').textContent).toBe('Unable to fetch weather data. Please check your connection and try again.')
   })
 
   it('toggles unit preference', async () => {

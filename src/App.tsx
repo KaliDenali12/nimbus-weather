@@ -33,8 +33,10 @@ function WeatherApp() {
         <Toast
           message={
             geoError === 'denied'
-              ? "Location access denied. We've landed you in Antarctica! Use the search bar to find your city."
-              : "Couldn't detect your location. Showing Antarctica for now."
+              ? "Location access was not granted. We've landed you in Antarctica! Use the search bar to find your city."
+              : geoError === 'timeout'
+                ? "Location detection timed out. Showing Antarctica for now — try searching for your city."
+                : "Location detection is not available. Use the search bar to find your city."
           }
           onDismiss={dismissToast}
         />

@@ -86,12 +86,14 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
         if (e instanceof Error) {
           const status = getHttpStatus(e)
           if (status !== undefined && status >= 500) {
-            setError('Weather service is temporarily unavailable. Please try again later.')
+            setError('The weather service is temporarily unavailable. Please try again in a few minutes.')
+          } else if (status !== undefined && status === 429) {
+            setError('Too many requests. Please wait a moment and try again.')
           } else {
-            setError(e.message)
+            setError('Unable to fetch weather data. Please check your connection and try again.')
           }
         } else {
-          setError('Unable to fetch weather data. Check your connection and try again.')
+          setError('Unable to fetch weather data. Please check your connection and try again.')
         }
       } finally {
         setLoading(false)
