@@ -29,6 +29,7 @@ All in `src/components/`. All use named exports, functional style, consume conte
 | `ErrorState.tsx` | Error display | CloudOff icon, error message, retry button |
 | `Toast.tsx` | Notification | Fixed top-center, auto-dismiss, configurable duration |
 | `WeatherIcon.tsx` | Icon mapper | WMO code → Lucide icon, aria-hidden, custom size |
+| `SceneErrorBoundary.tsx` | WebGL crash guard | Class component, renders null on error, wraps WeatherScene |
 
 ## Styling Pattern
 

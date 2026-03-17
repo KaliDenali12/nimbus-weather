@@ -65,12 +65,13 @@ Snow-day is the ONLY theme where text is dark (`#1a2533`) against a light backgr
 
 All include `transition` for smooth theme changes. Hover states increase to white/18%.
 
-## Dark Mode Toggle
+## Dark Mode
 
 - Stored in `preferences.darkModeEnabled` (localStorage)
 - When enabled: `getTheme()` returns `darkModeTheme` regardless of weather
 - Toggle button in `Header.tsx` (Sun/Moon icon swap)
-- Does NOT use `prefers-color-scheme` media query (stretch feature, not implemented)
+- **System detection**: On first visit (no saved prefs), reads `prefers-color-scheme: dark` via `window.matchMedia` → sets initial `darkModeEnabled`. Subsequent visits use saved preference.
+- Implementation: `getSystemDarkMode()` in `lib/storage.ts`, called from `loadPreferences()` when `!raw`
 
 ## Transition Speeds
 

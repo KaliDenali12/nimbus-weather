@@ -69,9 +69,15 @@ Central error handler for the app:
 | Geo unavailable | `Toast` | "Location unavailable" — auto-dismiss |
 | No search results | SearchBar dropdown | "No cities found" text |
 
+## Error Boundaries
+
+- **SceneErrorBoundary** (`src/components/SceneErrorBoundary.tsx`) wraps `WeatherScene` in `App.tsx`
+- Class component (React error boundaries require class)
+- On WebGL crash: `getDerivedStateFromError()` → renders `null` (silent fallback — gradient background remains)
+- Uses erasableSyntaxOnly-compliant pattern: `state: State = { hasError: false }` as field declaration
+
 ## What's Missing
 
-- **No error boundaries** — React error boundary for 3D scene would be valuable (WebGL can crash)
 - **No retry with backoff** — single retry only via manual "Try Again"
 - **No offline detection** — no `navigator.onLine` check or service worker
 - **No error logging** — errors are shown to user but not tracked/reported

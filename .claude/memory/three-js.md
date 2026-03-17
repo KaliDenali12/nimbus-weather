@@ -20,8 +20,9 @@
 
 ## Architecture
 
-- `WeatherScene` renders in `App.tsx` as fixed background (`position: fixed, inset: 0, z-index: 0`)
-- Canvas: `camera={{ position: [0, 2, 5], fov: 45 }}`, `dpr={Math.min(window.devicePixelRatio, 2)}`
+- `WeatherScene` renders in `App.tsx` wrapped by `SceneErrorBoundary` (catches WebGL crashes → renders null)
+- Canvas: `camera={{ position: [0, 2, 8], fov: 60 }}`, `dpr={Math.min(window.devicePixelRatio, 2)}`
+- Position: fixed background (z-index: 0), transparent alpha
 - SceneContent receives `condition` + `timeOfDay` from `useWeather()` context
 - Scene elements rendered conditionally based on weather condition
 
