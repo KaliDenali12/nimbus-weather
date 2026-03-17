@@ -23,14 +23,16 @@ export function RainParticles({ intensity = 800 }: RainParticlesProps) {
 
   useFrame(() => {
     if (!ref.current) return
-    const posArr = ref.current.geometry.attributes.position!.array as Float32Array
+    const posAttr = ref.current.geometry.attributes.position
+    if (!posAttr) return
+    const posArr = posAttr.array as Float32Array
     for (let i = 0; i < intensity; i++) {
       posArr[i * 3 + 1] -= 0.15
       if (posArr[i * 3 + 1] < -1) {
         posArr[i * 3 + 1] = 15
       }
     }
-    ref.current.geometry.attributes.position!.needsUpdate = true
+    posAttr.needsUpdate = true
   })
 
   return (

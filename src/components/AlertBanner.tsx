@@ -3,7 +3,7 @@ import { AlertTriangle, X } from 'lucide-react'
 import { useWeather } from '@/context/WeatherContext.tsx'
 import type { WeatherAlert } from '@/types/index.ts'
 
-const severityStyles: Record<WeatherAlert['severity'], { bg: string; border: string; text: string }> = {
+const SEVERITY_STYLES: Record<WeatherAlert['severity'], { bg: string; border: string; text: string }> = {
   advisory: {
     bg: 'rgba(251, 191, 36, 0.2)',
     border: 'rgba(251, 191, 36, 0.4)',
@@ -33,7 +33,7 @@ export function AlertBanner() {
   return (
     <div className="flex flex-col gap-3" role="alert">
       {visibleAlerts.map((alert) => {
-        const style = severityStyles[alert.severity]
+        const style = SEVERITY_STYLES[alert.severity]
         return (
           <div
             key={alert.id}
@@ -49,7 +49,7 @@ export function AlertBanner() {
                 <p className="font-display text-[14px] font-bold" style={{ color: style.text }}>
                   {alert.event}
                 </p>
-                <p className="text-body-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-body-sm mt-1 text-secondary">
                   {alert.description}
                 </p>
               </div>

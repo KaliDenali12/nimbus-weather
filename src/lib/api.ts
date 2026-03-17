@@ -2,6 +2,40 @@ import type { GeocodingResult, WeatherData, DailyForecast, CurrentWeather } from
 
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
+const GEOCODING_RESULT_LIMIT = 8
+const FORECAST_DAYS = 6 // today + 5 days
+const MIN_SEARCH_QUERY_LENGTH = 2
+
+/** Raw shape of the Open-Meteo geocoding API response */
+interface GeocodingApiResponse {
+  results?: GeocodingResult[]
+}
+
+/** Raw shape of the Open-Meteo forecast API "current" block */
+interface ForecastCurrentBlock {
+  temperature_2m: number
+  apparent_temperature: number
+  relative_humidity_2m: number
+  wind_speed_10m: number
+  weather_code: number
+  is_day: number
+}
+
+/** Raw shape of the Open-Meteo forecast API "daily" block */
+interface ForecastDailyBlock {
+  time: string[]
+  weather_code: number[]
+  temperature_2m_max: number[]
+  temperature_2m_min: number[]
+  precipitation_probability_max?: number[]
+}
+
+/** Raw shape of the Open-Meteo forecast API response */
+interface ForecastApiResponse {
+  current: ForecastCurrentBlock
+  daily: ForecastDailyBlock
+  timezone?: string
+}
 
 export class ApiError extends Error {
   status?: number
@@ -13,19 +47,19 @@ export class ApiError extends Error {
 }
 
 export async function searchCities(query: string): Promise<GeocodingResult[]> {
-  if (query.trim().length < 2) return []
+  if (query.trim().length < MIN_SEARCH_QUERY_LENGTH) return []
 
   const url = new URL(GEOCODING_URL)
   url.searchParams.set('name', query.trim())
-  url.searchParams.set('count', '8')
+  url.searchParams.set('count', GEOCODING_RESULT_LIMIT.toString())
   url.searchParams.set('language', 'en')
   url.searchParams.set('format', 'json')
 
   const res = await fetch(url.toString())
   if (!res.ok) throw new ApiError('Failed to search cities', res.status)
 
-  const data = await res.json()
-  return (data.results ?? []) as GeocodingResult[]
+  const data: GeocodingApiResponse = await res.json()
+  return data.results ?? []
 }
 
 export async function fetchWeather(
@@ -46,12 +80,12 @@ export async function fetchWeather(
     'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max',
   )
   url.searchParams.set('timezone', 'auto')
-  url.searchParams.set('forecast_days', '6') // today + 5 days
+  url.searchParams.set('forecast_days', FORECAST_DAYS.toString())
 
   const res = await fetch(url.toString())
   if (!res.ok) throw new ApiError('Failed to fetch weather data', res.status)
 
-  const data = await res.json()
+  const data: ForecastApiResponse = await res.json()
 
   const current: CurrentWeather = {
     temperature: data.current.temperature_2m,
@@ -102,11 +136,11 @@ export async function reverseGeocode(
   try {
     const res = await fetch(url.toString())
     if (!res.ok) return null
-    const data = await res.json()
+    const data: GeocodingApiResponse = await res.json()
     const result = data.results?.[0]
     if (result) return { name: result.name, country: result.country ?? '' }
   } catch {
-    // Silently fail — we'll use fallback naming
+    // Non-critical: reverse geocode is a best-effort enhancement for location names
   }
   return null
 }

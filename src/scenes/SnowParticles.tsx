@@ -21,8 +21,10 @@ export function SnowParticles() {
 
   useFrame((state) => {
     if (!ref.current) return
+    const posAttr = ref.current.geometry.attributes.position
+    if (!posAttr) return
     const t = state.clock.getElapsedTime()
-    const posArr = ref.current.geometry.attributes.position!.array as Float32Array
+    const posArr = posAttr.array as Float32Array
     for (let i = 0; i < COUNT; i++) {
       posArr[i * 3] += Math.sin(t + i) * 0.002
       posArr[i * 3 + 1] -= 0.02
@@ -31,7 +33,7 @@ export function SnowParticles() {
         posArr[i * 3] = (Math.random() - 0.5) * 20
       }
     }
-    ref.current.geometry.attributes.position!.needsUpdate = true
+    posAttr.needsUpdate = true
   })
 
   return (

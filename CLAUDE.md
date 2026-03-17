@@ -291,3 +291,7 @@ All mandatory MVP features are complete. Stretch features from the PRD:
 | **Inline comments** | When code is read | Non-obvious "why" explanations |
 
 **Rule**: Prevents mistakes on any task → CLAUDE.md. Cross-cutting pattern → MEMORY.md. Single-feature deep dive → sub-memory file. Single non-obvious line → inline comment.
+
+## NightyTidy — Last Run
+
+Last run: 2026-03-17. To undo, reset to git tag `nightytidy-before-2026-03-17-1741`.

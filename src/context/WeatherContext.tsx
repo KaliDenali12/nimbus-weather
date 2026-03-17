@@ -41,6 +41,13 @@ interface WeatherContextValue {
   retry: () => void
 }
 
+function getHttpStatus(error: Error): number | undefined {
+  if ('status' in error && typeof (error as Record<string, unknown>).status === 'number') {
+    return (error as Record<string, unknown>).status as number
+  }
+  return undefined
+}
+
 const WeatherContext = createContext<WeatherContextValue | null>(null)
 
 export function WeatherProvider({ children }: { children: ReactNode }) {
@@ -76,11 +83,18 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
         const data = await fetchWeather(lat, lon, name, country)
         setWeather(data)
       } catch (e) {
-        setError(
-          e instanceof Error
-            ? e.message
-            : 'Unable to fetch weather data. Check your connection and try again.',
-        )
+        if (e instanceof Error) {
+          const status = getHttpStatus(e)
+          if (status !== undefined && status >= 500) {
+            setError('The weather service is temporarily unavailable. Please try again in a few minutes.')
+          } else if (status !== undefined && status === 429) {
+            setError('Too many requests. Please wait a moment and try again.')
+          } else {
+            setError('Unable to fetch weather data. Please check your connection and try again.')
+          }
+        } else {
+          setError('Unable to fetch weather data. Please check your connection and try again.')
+        }
       } finally {
         setLoading(false)
       }
@@ -128,18 +142,16 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
 
   const selectCity = useCallback(
     (city: City) => {
-      setPreferences((prev) => {
-        const updated = addRecentCity(prev, city)
-        return updated
-      })
+      setPreferences((prev) => addRecentCity(prev, city))
       loadWeatherForCoords(city.lat, city.lon, city.name, city.country)
     },
     [loadWeatherForCoords],
   )
 
-  const searchForCities = useCallback(async (query: string) => {
-    return searchCities(query)
-  }, [])
+  const searchForCities = useCallback(
+    (query: string) => searchCities(query),
+    [],
+  )
 
   const toggleUnit = useCallback(() => {
     setPreferences((prev) =>
@@ -148,7 +160,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const toggleDark = useCallback(() => {
-    setPreferences((prev) => toggleDarkMode(prev))
+    setPreferences(toggleDarkMode)
   }, [])
 
   const retry = useCallback(() => {

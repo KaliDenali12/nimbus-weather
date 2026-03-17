@@ -20,7 +20,7 @@ export function CurrentWeather() {
           <h2 className="font-display text-display-lg tracking-[-0.5px]">
             {location.name}
           </h2>
-          <p className="text-body-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-body-sm mt-0.5 text-secondary">
             {location.country}
           </p>
 
@@ -41,7 +41,7 @@ export function CurrentWeather() {
           <div className="flex items-center gap-2">
             <Thermometer size={16} className="opacity-60" aria-hidden="true" />
             <div>
-              <p className="text-caption uppercase tracking-[1.5px]" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-caption uppercase tracking-[1.5px] text-secondary">
                 FEELS LIKE
               </p>
               <p className="text-body font-medium">
@@ -53,7 +53,7 @@ export function CurrentWeather() {
           <div className="flex items-center gap-2">
             <Droplets size={16} className="opacity-60" aria-hidden="true" />
             <div>
-              <p className="text-caption uppercase tracking-[1.5px]" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-caption uppercase tracking-[1.5px] text-secondary">
                 HUMIDITY
               </p>
               <p className="text-body font-medium">
@@ -65,7 +65,7 @@ export function CurrentWeather() {
           <div className="flex items-center gap-2">
             <Wind size={16} className="opacity-60" aria-hidden="true" />
             <div>
-              <p className="text-caption uppercase tracking-[1.5px]" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-caption uppercase tracking-[1.5px] text-secondary">
                 WIND
               </p>
               <p className="text-body font-medium">

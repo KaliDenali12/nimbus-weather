@@ -38,6 +38,16 @@ describe('searchCities', () => {
     expect(await searchCities('  ')).toEqual([])
   })
 
+  it('fetches results for exactly 2-character query (boundary)', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockGeoResponse),
+    } as Response)
+
+    const results = await searchCities('LA')
+    expect(results).toHaveLength(2)
+  })
+
   it('fetches and returns results', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
       ok: true,

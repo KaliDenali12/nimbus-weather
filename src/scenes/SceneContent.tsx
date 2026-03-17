@@ -9,6 +9,12 @@ import { SimpleCloud } from '@/scenes/SimpleCloud.tsx'
 import { Ground } from '@/scenes/Ground.tsx'
 import { DioramaObjects } from '@/scenes/DioramaObjects.tsx'
 
+const RAIN_INTENSITY: Record<string, number> = {
+  storm: 1500,
+  drizzle: 300,
+  default: 800,
+}
+
 interface SceneContentProps {
   condition: WeatherCondition
   timeOfDay: TimeOfDay
@@ -54,7 +60,7 @@ export default function SceneContent({ condition, timeOfDay, reducedMotion }: Sc
   }, [isNight, condition, isSnow])
 
   const cloudSpeed = reducedMotion ? 0 : 0.2
-  const rainIntensity = condition === 'storm' ? 1500 : condition === 'drizzle' ? 300 : 800
+  const rainIntensity = RAIN_INTENSITY[condition] ?? RAIN_INTENSITY.default
 
   return (
     <group ref={groupRef}>

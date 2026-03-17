@@ -26,7 +26,7 @@ export function TemperatureChart() {
 
   return (
     <section className="glass-card" aria-label="Temperature trend chart">
-      <h3 className="font-display text-heading-3 mb-4" style={{ color: 'var(--text-secondary)' }}>
+      <h3 className="font-display text-heading-3 mb-4 text-secondary">
         Temperature Trend
       </h3>
 

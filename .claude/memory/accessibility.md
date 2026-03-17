@@ -57,7 +57,6 @@
 
 ## Gaps / Future Work
 
-- No `prefers-color-scheme` detection (dark mode is manual toggle only)
 - No skip-to-content link
 - No axe-core automated testing in CI
 - Secondary text contrast ratios not formally verified

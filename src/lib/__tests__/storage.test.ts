@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { loadPreferences, savePreferences, addRecentCity, setUnit, toggleDarkMode } from '../storage.ts'
 import type { UserPreferences, City } from '@/types/index.ts'
 
@@ -7,6 +7,10 @@ const mockCity2: City = { name: 'London', lat: 51.51, lon: -0.13, country: 'UK' 
 
 beforeEach(() => {
   localStorage.clear()
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 describe('loadPreferences', () => {
@@ -19,11 +23,14 @@ describe('loadPreferences', () => {
   })
 
   it('detects system dark mode when no saved preferences', () => {
-    const original = window.matchMedia
-    window.matchMedia = vi.fn().mockReturnValue({ matches: true })
-    const prefs = loadPreferences()
-    expect(prefs.darkModeEnabled).toBe(true)
-    window.matchMedia = original
+    const originalMatchMedia = window.matchMedia
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true }) as typeof window.matchMedia
+    try {
+      const prefs = loadPreferences()
+      expect(prefs.darkModeEnabled).toBe(true)
+    } finally {
+      window.matchMedia = originalMatchMedia
+    }
   })
 
   it('loads saved preferences', () => {
@@ -84,7 +91,6 @@ describe('savePreferences', () => {
       throw new Error('QuotaExceeded')
     })
     expect(() => savePreferences(loadPreferences())).not.toThrow()
-    vi.restoreAllMocks()
   })
 })
 
@@ -103,6 +109,23 @@ describe('addRecentCity', () => {
     const updated = addRecentCity(prefs, mockCity) // re-add Tokyo
     expect(updated.recentCities).toHaveLength(2)
     expect(updated.recentCities[0]!.name).toBe('Tokyo')
+  })
+
+  it('does not remove cities that share only lat or only lon', () => {
+    // Cities share lat but differ in lon — both should be kept
+    const sameLatCity: City = { name: 'SameLat', lat: 35.68, lon: 0, country: 'X' }
+    // Cities share lon but differ in lat — both should be kept
+    const sameLonCity: City = { name: 'SameLon', lat: 0, lon: 139.69, country: 'X' }
+    const prefs: UserPreferences = {
+      ...loadPreferences(),
+      recentCities: [sameLatCity, sameLonCity],
+    }
+    const updated = addRecentCity(prefs, mockCity) // Tokyo: lat=35.68, lon=139.69
+    // All 3 should be present — dedup requires BOTH lat AND lon to match
+    expect(updated.recentCities).toHaveLength(3)
+    expect(updated.recentCities[0]!.name).toBe('Tokyo')
+    expect(updated.recentCities.find(c => c.name === 'SameLat')).toBeDefined()
+    expect(updated.recentCities.find(c => c.name === 'SameLon')).toBeDefined()
   })
 
   it('caps at 5 cities', () => {

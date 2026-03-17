@@ -11,6 +11,7 @@ export function SearchBar() {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
+  const [searchError, setSearchError] = useState(false)
   const debouncedQuery = useDebounce(query, 300)
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -25,6 +26,7 @@ export function SearchBar() {
 
     let cancelled = false
     setLoading(true)
+    setSearchError(false)
 
     searchForCities(debouncedQuery).then((data) => {
       if (!cancelled) {
@@ -36,6 +38,8 @@ export function SearchBar() {
     }).catch(() => {
       if (!cancelled) {
         setResults([])
+        setSearchError(true)
+        setIsOpen(true)
         setLoading(false)
       }
     })
@@ -94,6 +98,7 @@ export function SearchBar() {
     setQuery('')
     setResults([])
     setIsOpen(false)
+    setSearchError(false)
     inputRef.current?.focus()
   }
 
@@ -144,8 +149,10 @@ export function SearchBar() {
           }}
         >
           {results.length === 0 && !loading && (
-            <li className="px-4 py-3 text-body-sm" style={{ color: 'var(--text-secondary)' }}>
-              No cities found
+            <li className="px-4 py-3 text-body-sm text-secondary">
+              {searchError
+                ? 'Search failed. Please check your connection and try again.'
+                : 'No cities found. Try a different spelling or a nearby city.'}
             </li>
           )}
           {results.map((result, index) => (

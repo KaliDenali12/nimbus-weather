@@ -2,7 +2,7 @@ import type { WeatherCondition, TimeOfDay, WeatherTheme } from '@/types/index.ts
 
 type ThemeKey = `${WeatherCondition}-${TimeOfDay}`
 
-const themes: Record<string, WeatherTheme> = {
+const themes: Record<ThemeKey, WeatherTheme> = {
   'clear-day': {
     bgGradient: 'linear-gradient(135deg, #1e5faa 0%, #5b9bd5 40%, #8bbaf0 100%)',
     cardSurface: 'rgba(255, 255, 255, 0.14)',
@@ -132,7 +132,7 @@ export function getTheme(
 ): WeatherTheme {
   if (isDarkMode) return darkModeTheme
   const key: ThemeKey = `${condition}-${timeOfDay}`
-  return themes[key] ?? themes['clear-day']!
+  return themes[key] ?? themes['clear-day']
 }
 
 /** Apply theme CSS variables to the document root */

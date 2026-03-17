@@ -1,6 +1,10 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useDebounce } from '../useDebounce.ts'
+
+afterEach(() => {
+  vi.useRealTimers()
+})
 
 describe('useDebounce', () => {
   it('returns initial value immediately', () => {
@@ -20,8 +24,6 @@ describe('useDebounce', () => {
 
     act(() => { vi.advanceTimersByTime(300) })
     expect(result.current).toBe('world')
-
-    vi.useRealTimers()
   })
 
   it('resets timer on rapid changes', () => {
@@ -42,7 +44,5 @@ describe('useDebounce', () => {
 
     act(() => { vi.advanceTimersByTime(300) })
     expect(result.current).toBe('abcd')
-
-    vi.useRealTimers()
   })
 })

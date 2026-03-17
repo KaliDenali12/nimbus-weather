@@ -6,8 +6,8 @@ interface DioramaObjectsProps {
   isNight: boolean
 }
 
-/** Simple stylized tree */
-function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
+/** Simple stylized tree with optional canopy color override (e.g. snow-covered) */
+function Tree({ position, scale = 1, canopyColor }: { position: [number, number, number]; scale?: number; canopyColor?: string }) {
   return (
     <group position={position} scale={scale}>
       {/* Trunk */}
@@ -18,11 +18,11 @@ function Tree({ position, scale = 1 }: { position: [number, number, number]; sca
       {/* Canopy */}
       <mesh position={[0, 1.1, 0]}>
         <coneGeometry args={[0.5, 1.2, 8]} />
-        <meshStandardMaterial color="#2d6a2d" roughness={0.7} />
+        <meshStandardMaterial color={canopyColor ?? '#2d6a2d'} roughness={0.7} />
       </mesh>
       <mesh position={[0, 1.6, 0]}>
         <coneGeometry args={[0.35, 0.8, 8]} />
-        <meshStandardMaterial color="#3a8a3a" roughness={0.7} />
+        <meshStandardMaterial color={canopyColor ?? '#3a8a3a'} roughness={0.7} />
       </mesh>
     </group>
   )
@@ -70,20 +70,12 @@ export function DioramaObjects({ condition, isNight: _isNight }: DioramaObjectsP
         <group>
           {[[-3, -0.5, -2], [-1.5, -0.5, -4], [2, -0.5, -3], [4, -0.5, -1], [-2, -0.5, 1]].map(
             (pos, i) => (
-              <group key={i} position={pos as [number, number, number]} scale={0.8 + Math.random() * 0.4}>
-                <mesh position={[0, 0.4, 0]}>
-                  <cylinderGeometry args={[0.08, 0.12, 0.8, 8]} />
-                  <meshStandardMaterial color="#5a3a1a" roughness={0.8} />
-                </mesh>
-                <mesh position={[0, 1.1, 0]}>
-                  <coneGeometry args={[0.5, 1.2, 8]} />
-                  <meshStandardMaterial color={treeColor} roughness={0.7} />
-                </mesh>
-                <mesh position={[0, 1.6, 0]}>
-                  <coneGeometry args={[0.35, 0.8, 8]} />
-                  <meshStandardMaterial color={treeColor} roughness={0.7} />
-                </mesh>
-              </group>
+              <Tree
+                key={i}
+                position={pos as [number, number, number]}
+                scale={0.8 + Math.random() * 0.4}
+                canopyColor={treeColor}
+              />
             ),
           )}
         </group>
