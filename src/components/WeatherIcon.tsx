@@ -19,7 +19,7 @@ interface WeatherIconProps {
   className?: string
 }
 
-const iconMap: Record<string, typeof Sun> = {
+const ICON_MAP: Record<string, typeof Sun> = {
   Sun,
   Moon,
   Cloud,
@@ -34,7 +34,7 @@ const iconMap: Record<string, typeof Sun> = {
 
 export function WeatherIcon({ code, isDay = true, size = 24, className = '' }: WeatherIconProps) {
   const iconName = getWeatherIconName(code, isDay)
-  const Icon = iconMap[iconName] ?? Cloud
+  const Icon = ICON_MAP[iconName] ?? Cloud
 
   return <Icon size={size} className={className} aria-hidden="true" />
 }

@@ -3,7 +3,7 @@ import type { City, TemperatureUnit, UserPreferences } from '@/types/index.ts'
 const STORAGE_KEY = 'nimbus-preferences'
 const MAX_RECENT_CITIES = 5
 
-const defaults: UserPreferences = {
+const DEFAULTS: UserPreferences = {
   unitPreference: 'celsius',
   darkModeEnabled: false,
   recentCities: [],
@@ -17,17 +17,17 @@ function getSystemDarkMode(): boolean {
 export function loadPreferences(): UserPreferences {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return { ...defaults, darkModeEnabled: getSystemDarkMode() }
+    if (!raw) return { ...DEFAULTS, darkModeEnabled: getSystemDarkMode() }
     const parsed = JSON.parse(raw) as Partial<UserPreferences>
     return {
-      unitPreference: parsed.unitPreference ?? defaults.unitPreference,
-      darkModeEnabled: parsed.darkModeEnabled ?? defaults.darkModeEnabled,
+      unitPreference: parsed.unitPreference ?? DEFAULTS.unitPreference,
+      darkModeEnabled: parsed.darkModeEnabled ?? DEFAULTS.darkModeEnabled,
       recentCities: Array.isArray(parsed.recentCities)
         ? parsed.recentCities.slice(0, MAX_RECENT_CITIES)
         : [],
     }
   } catch {
-    return { ...defaults }
+    return { ...DEFAULTS }
   }
 }
 

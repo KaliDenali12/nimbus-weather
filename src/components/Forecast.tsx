@@ -1,7 +1,7 @@
+import { Droplets } from 'lucide-react'
 import { useWeather } from '@/context/WeatherContext.tsx'
 import { WeatherIcon } from '@/components/WeatherIcon.tsx'
 import { formatTemp, formatDayName } from '@/lib/units.ts'
-import { Droplets } from 'lucide-react'
 
 export function Forecast() {
   const { weather, preferences } = useWeather()

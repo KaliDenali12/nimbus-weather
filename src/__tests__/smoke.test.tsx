@@ -29,7 +29,7 @@ vi.mock('@/scenes/WeatherScene.tsx', () => ({
   WeatherScene: () => <div data-testid="weather-scene" />,
 }))
 
-import App from '@/App.tsx'
+import { App } from '@/App.tsx'
 import { fetchWeather, searchCities } from '@/lib/api.ts'
 import { getUserLocation } from '@/lib/geolocation.ts'
 
