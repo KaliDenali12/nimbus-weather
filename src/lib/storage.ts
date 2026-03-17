@@ -9,10 +9,15 @@ const defaults: UserPreferences = {
   recentCities: [],
 }
 
+function getSystemDarkMode(): boolean {
+  return typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
 export function loadPreferences(): UserPreferences {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return { ...defaults }
+    if (!raw) return { ...defaults, darkModeEnabled: getSystemDarkMode() }
     const parsed = JSON.parse(raw) as Partial<UserPreferences>
     return {
       unitPreference: parsed.unitPreference ?? defaults.unitPreference,

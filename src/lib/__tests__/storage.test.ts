@@ -13,8 +13,17 @@ describe('loadPreferences', () => {
   it('returns defaults when no data stored', () => {
     const prefs = loadPreferences()
     expect(prefs.unitPreference).toBe('celsius')
-    expect(prefs.darkModeEnabled).toBe(false)
+    // darkModeEnabled follows system preference when no saved data
+    expect(typeof prefs.darkModeEnabled).toBe('boolean')
     expect(prefs.recentCities).toEqual([])
+  })
+
+  it('detects system dark mode when no saved preferences', () => {
+    const original = window.matchMedia
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true })
+    const prefs = loadPreferences()
+    expect(prefs.darkModeEnabled).toBe(true)
+    window.matchMedia = original
   })
 
   it('loads saved preferences', () => {

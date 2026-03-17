@@ -34,7 +34,8 @@ Portfolio-grade client-side weather app: React 19 + TypeScript 5.9 + Three.js + 
 ```
 src/
 ├── components/           # UI components (Header, SearchBar, CurrentWeather, etc.)
-│   └── __tests__/        # Component tests (WeatherIcon, Toast)
+│   ├── __tests__/        # Component tests (WeatherIcon, Toast)
+│   └── SceneErrorBoundary.tsx  # Error boundary for WebGL crashes
 ├── scenes/               # Three.js / R3F 3D scene components
 │   ├── WeatherScene.tsx   # Canvas wrapper, lazy-loads SceneContent
 │   ├── SceneContent.tsx   # Main orchestrator: lighting, particles, objects
@@ -71,7 +72,7 @@ src/
 npm run dev               # Vite dev server (localhost:5173)
 npm run build             # tsc -b && vite build
 npm run preview           # Preview production build
-npm run test              # Vitest: 87 tests, 9 files, ~1.2s
+npm run test              # Vitest: 97 tests, 10 files, ~1.3s
 npm run test:watch        # Watch mode
 npm run test:coverage     # Coverage with @vitest/coverage-v8
 npm run lint              # ESLint 9 with TypeScript + React plugins
@@ -267,7 +268,7 @@ All mandatory MVP features are complete. Stretch features from the PRD:
 - Animated number transitions
 - Hourly forecast breakdown
 - Sunrise/sunset, UV index, pressure, visibility
-- `prefers-color-scheme` system dark mode detection
+- ~~`prefers-color-scheme` system dark mode detection~~ (implemented: defaults to system preference on first visit)
 - Performance toggle to disable 3D scene
 - Weather alerts (Open-Meteo free tier lacks alert data — UI component exists)
 

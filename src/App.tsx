@@ -11,6 +11,7 @@ import { LoadingState } from '@/components/LoadingState.tsx'
 import { ErrorState } from '@/components/ErrorState.tsx'
 import { Toast } from '@/components/Toast.tsx'
 import { WeatherScene } from '@/scenes/WeatherScene.tsx'
+import { SceneErrorBoundary } from '@/components/SceneErrorBoundary.tsx'
 
 function WeatherApp() {
   const { loading, error, geoError } = useWeather()
@@ -23,7 +24,9 @@ function WeatherApp() {
   return (
     <div className="relative min-h-screen">
       {/* 3D Background Scene */}
-      <WeatherScene />
+      <SceneErrorBoundary>
+        <WeatherScene />
+      </SceneErrorBoundary>
 
       {/* Geo error toast */}
       {geoError && showGeoToast && (
