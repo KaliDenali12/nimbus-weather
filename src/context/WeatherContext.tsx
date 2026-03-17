@@ -146,7 +146,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const toggleDark = useCallback(() => {
-    setPreferences((prev) => toggleDarkMode(prev))
+    setPreferences(toggleDarkMode)
   }, [])
 
   const retry = useCallback(() => {
