@@ -8,7 +8,7 @@ export function LoadingState() {
       aria-live="polite"
     >
       <Loader2 size={36} className="animate-spin opacity-60" aria-hidden="true" />
-      <p className="font-body text-body" style={{ color: 'var(--text-secondary)' }}>
+      <p className="font-body text-body text-secondary">
         Fetching weather data...
       </p>
     </div>

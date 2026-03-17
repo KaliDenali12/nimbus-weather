@@ -49,7 +49,7 @@ export function AlertBanner() {
                 <p className="font-display text-[14px] font-bold" style={{ color: style.text }}>
                   {alert.event}
                 </p>
-                <p className="text-body-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-body-sm mt-1 text-secondary">
                   {alert.description}
                 </p>
               </div>

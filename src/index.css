@@ -41,6 +41,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer utilities {
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+}
+
 @layer components {
   .glass-card {
     background: var(--card-surface);

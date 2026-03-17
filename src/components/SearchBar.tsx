@@ -144,7 +144,7 @@ export function SearchBar() {
           }}
         >
           {results.length === 0 && !loading && (
-            <li className="px-4 py-3 text-body-sm" style={{ color: 'var(--text-secondary)' }}>
+            <li className="px-4 py-3 text-body-sm text-secondary">
               No cities found
             </li>
           )}
