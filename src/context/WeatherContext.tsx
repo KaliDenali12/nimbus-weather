@@ -134,9 +134,10 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     [loadWeatherForCoords],
   )
 
-  const searchForCities = useCallback(async (query: string) => {
-    return searchCities(query)
-  }, [])
+  const searchForCities = useCallback(
+    (query: string) => searchCities(query),
+    [],
+  )
 
   const toggleUnit = useCallback(() => {
     setPreferences((prev) =>
