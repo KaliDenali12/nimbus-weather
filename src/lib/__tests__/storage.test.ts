@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { loadPreferences, savePreferences, addRecentCity, setUnit, toggleDarkMode } from '../storage.ts'
 import type { UserPreferences, City } from '@/types/index.ts'
 
@@ -7,6 +7,10 @@ const mockCity2: City = { name: 'London', lat: 51.51, lon: -0.13, country: 'UK' 
 
 beforeEach(() => {
   localStorage.clear()
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 describe('loadPreferences', () => {
@@ -19,11 +23,14 @@ describe('loadPreferences', () => {
   })
 
   it('detects system dark mode when no saved preferences', () => {
-    const original = window.matchMedia
-    window.matchMedia = vi.fn().mockReturnValue({ matches: true })
-    const prefs = loadPreferences()
-    expect(prefs.darkModeEnabled).toBe(true)
-    window.matchMedia = original
+    const originalMatchMedia = window.matchMedia
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true }) as typeof window.matchMedia
+    try {
+      const prefs = loadPreferences()
+      expect(prefs.darkModeEnabled).toBe(true)
+    } finally {
+      window.matchMedia = originalMatchMedia
+    }
   })
 
   it('loads saved preferences', () => {
@@ -84,7 +91,6 @@ describe('savePreferences', () => {
       throw new Error('QuotaExceeded')
     })
     expect(() => savePreferences(loadPreferences())).not.toThrow()
-    vi.restoreAllMocks()
   })
 })
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, act, waitFor } from '@testing-library/react'
 import { fireEvent } from '@testing-library/react'
 import { WeatherProvider, useWeather } from '../WeatherContext.tsx'
@@ -85,14 +85,17 @@ beforeEach(() => {
   localStorage.clear()
 })
 
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
 describe('WeatherContext', () => {
   it('throws when useWeather is called outside provider', () => {
     // Suppress React error boundary console output
-    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
     expect(() => render(<TestConsumer />)).toThrow(
       'useWeather must be used within a WeatherProvider',
     )
-    spy.mockRestore()
   })
 
   it('loads weather via geolocation on mount', async () => {

@@ -1,16 +1,7 @@
-import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { TemperatureChart } from '../TemperatureChart.tsx'
 import type { WeatherData, UserPreferences } from '@/types/index.ts'
-
-// Polyfill ResizeObserver for recharts
-beforeAll(() => {
-  globalThis.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  }
-})
 
 const mockWeatherData: WeatherData = {
   location: {

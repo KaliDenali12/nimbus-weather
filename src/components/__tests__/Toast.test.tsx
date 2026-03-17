@@ -1,6 +1,10 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen, act, fireEvent } from '@testing-library/react'
 import { Toast } from '../Toast.tsx'
+
+afterEach(() => {
+  vi.useRealTimers()
+})
 
 describe('Toast', () => {
   it('renders message text', () => {
@@ -23,8 +27,6 @@ describe('Toast', () => {
 
     act(() => { vi.advanceTimersByTime(200) })
     expect(onDismiss).toHaveBeenCalledOnce()
-
-    vi.useRealTimers()
   })
 
   it('auto-dismisses after duration', () => {
@@ -36,7 +38,5 @@ describe('Toast', () => {
     act(() => { vi.advanceTimersByTime(3000) })
     act(() => { vi.advanceTimersByTime(200) })
     expect(onDismiss).toHaveBeenCalledOnce()
-
-    vi.useRealTimers()
   })
 })

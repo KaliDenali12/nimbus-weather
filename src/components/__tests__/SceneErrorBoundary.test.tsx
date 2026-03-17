@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { SceneErrorBoundary } from '../SceneErrorBoundary.tsx'
 
@@ -9,6 +9,10 @@ function ThrowingComponent(): JSX.Element {
 function WorkingComponent() {
   return <div data-testid="child">Working content</div>
 }
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('SceneErrorBoundary', () => {
   it('renders children when no error', () => {
@@ -22,7 +26,7 @@ describe('SceneErrorBoundary', () => {
 
   it('renders null (silent fallback) when child throws', () => {
     // Suppress React error boundary console output
-    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
 
     const { container } = render(
       <SceneErrorBoundary>
@@ -31,11 +35,10 @@ describe('SceneErrorBoundary', () => {
     )
 
     expect(container.firstChild).toBeNull()
-    spy.mockRestore()
   })
 
   it('catches error and sets hasError state', () => {
-    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
 
     render(
       <SceneErrorBoundary>
@@ -45,6 +48,5 @@ describe('SceneErrorBoundary', () => {
 
     // The fact that we get null (not a thrown error) confirms getDerivedStateFromError works
     expect(screen.queryByTestId('child')).not.toBeInTheDocument()
-    spy.mockRestore()
   })
 })
