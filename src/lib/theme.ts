@@ -132,7 +132,7 @@ export function getTheme(
 ): WeatherTheme {
   if (isDarkMode) return darkModeTheme
   const key: ThemeKey = `${condition}-${timeOfDay}`
-  return themes[key] ?? themes['clear-day']!
+  return themes[key] ?? themes['clear-day']
 }
 
 /** Apply theme CSS variables to the document root */
