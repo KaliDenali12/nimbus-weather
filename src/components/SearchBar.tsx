@@ -123,17 +123,25 @@ export function SearchBar() {
           aria-expanded={isOpen}
           aria-autocomplete="list"
           aria-controls="search-results"
+          aria-activedescendant={activeIndex >= 0 && results[activeIndex] ? `search-option-${results[activeIndex]!.id}` : undefined}
           role="combobox"
         />
         {query && (
           <button
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/50"
             onClick={clear}
             aria-label="Clear search"
           >
             <X size={16} className="text-white/50" />
           </button>
         )}
+      </div>
+
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {loading && 'Searching...'}
+        {!loading && isOpen && results.length > 0 && `${results.length} results available`}
+        {!loading && isOpen && results.length === 0 && !searchError && 'No cities found'}
+        {!loading && isOpen && searchError && 'Search failed'}
       </div>
 
       {isOpen && (
@@ -158,6 +166,7 @@ export function SearchBar() {
           {results.map((result, index) => (
             <li
               key={result.id}
+              id={`search-option-${result.id}`}
               role="option"
               aria-selected={index === activeIndex}
               className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors duration-fast
@@ -168,7 +177,7 @@ export function SearchBar() {
             >
               <MapPin size={14} className="text-white/40 shrink-0" aria-hidden="true" />
               <div className="min-w-0">
-                <span className="text-[14px] font-medium text-white/90">
+                <span className="text-body-sm font-medium text-white/90">
                   {result.name}
                 </span>
                 <span className="text-body-sm text-white/50 ml-1.5">

@@ -68,16 +68,11 @@ export function DioramaObjects({ condition, isNight: _isNight }: DioramaObjectsP
       {treeColor ? (
         // Snow-covered trees: override canopy color
         <group>
-          {[[-3, -0.5, -2], [-1.5, -0.5, -4], [2, -0.5, -3], [4, -0.5, -1], [-2, -0.5, 1]].map(
-            (pos, i) => (
-              <Tree
-                key={i}
-                position={pos as [number, number, number]}
-                scale={0.8 + Math.random() * 0.4}
-                canopyColor={treeColor}
-              />
-            ),
-          )}
+          <Tree position={[-3, -0.5, -2]} scale={0.9} canopyColor={treeColor} />
+          <Tree position={[-1.5, -0.5, -4]} scale={1.1} canopyColor={treeColor} />
+          <Tree position={[2, -0.5, -3]} scale={1.0} canopyColor={treeColor} />
+          <Tree position={[4, -0.5, -1]} scale={0.8} canopyColor={treeColor} />
+          <Tree position={[-2, -0.5, 1]} scale={1.0} canopyColor={treeColor} />
         </group>
       ) : (
         <>

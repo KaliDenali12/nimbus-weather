@@ -46,7 +46,7 @@ export function AlertBanner() {
             <div className="flex items-start gap-3">
               <AlertTriangle size={18} style={{ color: style.text }} className="shrink-0 mt-0.5" aria-hidden="true" />
               <div className="min-w-0 flex-1">
-                <p className="font-display text-[14px] font-bold" style={{ color: style.text }}>
+                <p className="font-display text-body-sm font-bold" style={{ color: style.text }}>
                   {alert.event}
                 </p>
                 <p className="text-body-sm mt-1 text-secondary">
@@ -54,7 +54,7 @@ export function AlertBanner() {
                 </p>
               </div>
               <button
-                className="p-1 hover:bg-white/10 rounded transition-colors shrink-0"
+                className="p-1 hover:bg-white/10 rounded transition-colors shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/50"
                 onClick={() => setDismissed((prev) => new Set([...prev, alert.id]))}
                 aria-label={`Dismiss ${alert.event} alert`}
               >

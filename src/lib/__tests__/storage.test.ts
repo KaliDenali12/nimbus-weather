@@ -72,6 +72,24 @@ describe('loadPreferences', () => {
     expect(prefs.darkModeEnabled).toBe(false)
     expect(prefs.recentCities).toEqual([])
   })
+
+  it('filters out invalid city objects from recentCities', () => {
+    localStorage.setItem('nimbus-preferences', JSON.stringify({
+      recentCities: [
+        { name: 'Tokyo', lat: 35.68, lon: 139.69, country: 'Japan' },
+        { name: '', lat: 0, lon: 0, country: 'X' },         // empty name
+        { lat: 0, lon: 0, country: 'X' },                    // missing name
+        { name: 'Bad', lat: NaN, lon: 0, country: 'X' },     // NaN lat
+        { name: 'Bad', lat: 0, lon: Infinity, country: 'X' },// Infinity lon
+        'not an object',                                       // wrong type
+        null,                                                  // null
+        { name: 'NoCountry', lat: 0, lon: 0 },               // missing country
+      ],
+    }))
+    const prefs = loadPreferences()
+    expect(prefs.recentCities).toHaveLength(1)
+    expect(prefs.recentCities[0]!.name).toBe('Tokyo')
+  })
 })
 
 describe('savePreferences', () => {

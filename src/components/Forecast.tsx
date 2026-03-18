@@ -24,11 +24,11 @@ export function Forecast() {
             className="flex flex-col items-center gap-2 py-3 rounded-xl
               hover:-translate-y-0.5 hover:bg-white/[0.06] transition-all duration-200"
           >
-            <span className="text-label text-secondary">
+            <time dateTime={day.date} className="text-label text-secondary">
               {formatDayName(day.date, i)}
-            </span>
+            </time>
 
-            <WeatherIcon code={day.weatherCode} isDay={isDay} size={28} className="opacity-80" />
+            <WeatherIcon code={day.weatherCode} isDay={i === 0 ? isDay : true} size={28} className="opacity-80" />
 
             <div className="text-center">
               <span className="font-display text-heading-3 block">

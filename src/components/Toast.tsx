@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { X } from 'lucide-react'
 
 interface ToastProps {
@@ -9,14 +9,22 @@ interface ToastProps {
 
 export function Toast({ message, duration = 5000, onDismiss }: ToastProps) {
   const [visible, setVisible] = useState(true)
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setVisible(false)
-      setTimeout(onDismiss, 200) // wait for fade-out
-    }, duration)
+    return () => clearTimeout(fadeTimerRef.current)
+  }, [])
+
+  const dismiss = useCallback(() => {
+    setVisible(false)
+    clearTimeout(fadeTimerRef.current)
+    fadeTimerRef.current = setTimeout(onDismiss, 200)
+  }, [onDismiss])
+
+  useEffect(() => {
+    const timer = setTimeout(dismiss, duration)
     return () => clearTimeout(timer)
-  }, [duration, onDismiss])
+  }, [duration, dismiss])
 
   return (
     <div
@@ -31,12 +39,12 @@ export function Toast({ message, duration = 5000, onDismiss }: ToastProps) {
         border: '1px solid rgba(255, 255, 255, 0.1)',
       }}
     >
-      <span className="font-body text-[14px] font-medium text-white/90">
+      <span className="font-body text-body-sm font-medium text-white/90">
         {message}
       </span>
       <button
-        onClick={() => { setVisible(false); setTimeout(onDismiss, 200) }}
-        className="ml-1 p-0.5 hover:bg-white/10 rounded transition-colors"
+        onClick={dismiss}
+        className="ml-1 p-1 hover:bg-white/10 rounded transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/50"
         aria-label="Dismiss notification"
       >
         <X size={14} className="text-white/60" />

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { searchCities, fetchWeather, reverseGeocode, ApiError } from '../api.ts'
+import { searchCities, fetchWeather, reverseGeocode, ApiError, clearGeocodingCache, clearForecastCache } from '../api.ts'
 import type { GeocodingResult, WeatherData, CurrentWeather, DailyForecast } from '@/types/index.ts'
 
 /**
@@ -16,6 +16,8 @@ import type { GeocodingResult, WeatherData, CurrentWeather, DailyForecast } from
 
 beforeEach(() => {
   vi.restoreAllMocks()
+  clearGeocodingCache()
+  clearForecastCache()
 })
 
 // --- Realistic Open-Meteo response fixtures ---
@@ -278,7 +280,8 @@ describe('fetchWeather: Response Contract', () => {
     const dayData = await fetchWeather(0, 0, 'X', 'Y')
     expect(dayData.current.isDay).toBe(true)
 
-    // is_day = 0 → false
+    // is_day = 0 → false (clear cache to bypass same-coordinate cache hit)
+    clearForecastCache()
     const nightResponse = {
       ...OPEN_METEO_FORECAST_RESPONSE,
       current: { ...OPEN_METEO_FORECAST_RESPONSE.current, is_day: 0 },

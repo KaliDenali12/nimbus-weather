@@ -91,13 +91,14 @@ describe('Smoke Tests', () => {
 
     render(<App />)
 
-    // Loading state should appear
+    // App shell (Header) is visible immediately, with skeleton loading state
+    expect(screen.getByText('Nimbus')).toBeInTheDocument()
     expect(screen.getByRole('status')).toBeInTheDocument()
-    expect(screen.getByText('Fetching weather data...')).toBeInTheDocument()
+    expect(screen.getByText('Loading weather data...')).toBeInTheDocument()
 
     // Then resolves to main content
     await waitFor(() => {
-      expect(screen.getByText('Nimbus')).toBeInTheDocument()
+      expect(screen.getByLabelText('Search for a city')).toBeInTheDocument()
     })
   })
 

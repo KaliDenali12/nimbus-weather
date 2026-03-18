@@ -2,6 +2,24 @@ import type { City, TemperatureUnit, UserPreferences } from '@/types/index.ts'
 
 const STORAGE_KEY = 'nimbus-preferences'
 const MAX_RECENT_CITIES = 5
+const MAX_CITY_NAME_LENGTH = 200
+
+function isValidCity(item: unknown): item is City {
+  if (typeof item !== 'object' || item === null) return false
+  const obj = item as Record<string, unknown>
+  return (
+    typeof obj.name === 'string' &&
+    obj.name.length > 0 &&
+    obj.name.length <= MAX_CITY_NAME_LENGTH &&
+    typeof obj.lat === 'number' &&
+    Number.isFinite(obj.lat) &&
+    obj.lat >= -90 && obj.lat <= 90 &&
+    typeof obj.lon === 'number' &&
+    Number.isFinite(obj.lon) &&
+    obj.lon >= -180 && obj.lon <= 180 &&
+    typeof obj.country === 'string'
+  )
+}
 
 const DEFAULTS: UserPreferences = {
   unitPreference: 'celsius',
@@ -33,7 +51,7 @@ export function loadPreferences(): UserPreferences {
           ? obj.darkModeEnabled
           : DEFAULTS.darkModeEnabled,
       recentCities: Array.isArray(obj.recentCities)
-        ? (obj.recentCities as City[]).slice(0, MAX_RECENT_CITIES)
+        ? (obj.recentCities as unknown[]).filter(isValidCity).slice(0, MAX_RECENT_CITIES)
         : [],
     }
   } catch {

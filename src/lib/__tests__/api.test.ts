@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { searchCities, fetchWeather, ApiError } from '../api.ts'
+import { searchCities, fetchWeather, ApiError, clearGeocodingCache, clearForecastCache } from '../api.ts'
 
 const mockGeoResponse = {
   results: [
@@ -29,6 +29,8 @@ const mockForecastResponse = {
 
 beforeEach(() => {
   vi.restoreAllMocks()
+  clearGeocodingCache()
+  clearForecastCache()
 })
 
 describe('searchCities', () => {
@@ -77,6 +79,13 @@ describe('searchCities', () => {
     } as Response)
 
     await expect(searchCities('London')).rejects.toThrow(ApiError)
+  })
+
+  it('returns empty array for excessively long queries', async () => {
+    const spy = vi.spyOn(globalThis, 'fetch')
+    const longQuery = 'a'.repeat(201)
+    expect(await searchCities(longQuery)).toEqual([])
+    expect(spy).not.toHaveBeenCalled()
   })
 })
 
@@ -128,5 +137,37 @@ describe('fetchWeather', () => {
 
     const data = await fetchWeather(0, 0, 'X', 'Y')
     expect(data.daily[0]!.precipitationProbability).toBe(0)
+  })
+
+  it('throws ApiError for NaN coordinates', async () => {
+    await expect(fetchWeather(NaN, 0, 'X', 'Y')).rejects.toThrow(ApiError)
+    await expect(fetchWeather(0, NaN, 'X', 'Y')).rejects.toThrow(ApiError)
+  })
+
+  it('throws ApiError for Infinity coordinates', async () => {
+    await expect(fetchWeather(Infinity, 0, 'X', 'Y')).rejects.toThrow(ApiError)
+    await expect(fetchWeather(0, -Infinity, 'X', 'Y')).rejects.toThrow(ApiError)
+  })
+
+  it('throws ApiError for out-of-range latitude', async () => {
+    await expect(fetchWeather(91, 0, 'X', 'Y')).rejects.toThrow(ApiError)
+    await expect(fetchWeather(-91, 0, 'X', 'Y')).rejects.toThrow(ApiError)
+  })
+
+  it('throws ApiError for out-of-range longitude', async () => {
+    await expect(fetchWeather(0, 181, 'X', 'Y')).rejects.toThrow(ApiError)
+    await expect(fetchWeather(0, -181, 'X', 'Y')).rejects.toThrow(ApiError)
+  })
+
+  it('accepts valid boundary coordinates', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockForecastResponse),
+    } as Response)
+
+    // All four corners of the valid coordinate space
+    await expect(fetchWeather(90, 180, 'X', 'Y')).resolves.toBeDefined()
+    await expect(fetchWeather(-90, -180, 'X', 'Y')).resolves.toBeDefined()
+    await expect(fetchWeather(0, 0, 'X', 'Y')).resolves.toBeDefined()
   })
 })
