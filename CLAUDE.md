@@ -294,4 +294,4 @@ All mandatory MVP features are complete. Stretch features from the PRD:
 
 ## NightyTidy — Last Run
 
-Last run: 2026-03-17. To undo, reset to git tag `nightytidy-before-2026-03-17-1741`.
+Last run: 2026-03-18. To undo, reset to git tag `nightytidy-before-2026-03-18-1312`.
