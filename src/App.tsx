@@ -7,7 +7,6 @@ import { CurrentWeather } from '@/components/CurrentWeather.tsx'
 import { Forecast } from '@/components/Forecast.tsx'
 import { TemperatureChart } from '@/components/TemperatureChart.tsx'
 import { AlertBanner } from '@/components/AlertBanner.tsx'
-import { LoadingState } from '@/components/LoadingState.tsx'
 import { ErrorState } from '@/components/ErrorState.tsx'
 import { Toast } from '@/components/Toast.tsx'
 import { WeatherScene } from '@/scenes/WeatherScene.tsx'
@@ -15,12 +14,16 @@ import { SceneErrorBoundary } from '@/components/SceneErrorBoundary.tsx'
 import { AppErrorBoundary } from '@/components/AppErrorBoundary.tsx'
 
 function WeatherApp() {
-  const { loading, error, geoError } = useWeather()
+  const { loading, refreshing, error, weather, geoError } = useWeather()
   const [showGeoToast, setShowGeoToast] = useState(true)
 
   const dismissToast = useCallback(() => setShowGeoToast(false), [])
 
-  if (loading) return <LoadingState />
+  // Show app shell immediately — never block the entire UI with a spinner.
+  // Initial load: show Header + Search + skeletons.
+  // City switch (refreshing): keep old weather data visible with subtle indicator.
+  const showSkeletons = loading && !weather
+  const showWeatherContent = !error && weather
 
   return (
     <div className="relative min-h-screen">
@@ -55,16 +58,23 @@ function WeatherApp() {
         <Header />
 
         <div className="flex flex-col gap-6 mt-2">
-          {/* Search section */}
+          {/* Search section — always visible */}
           <section aria-label="City search" className="flex flex-col gap-3">
             <SearchBar />
             <RecentCities />
           </section>
 
-          {error ? (
+          {error && !refreshing ? (
             <ErrorState />
-          ) : (
-            <>
+          ) : showSkeletons ? (
+            <WeatherSkeletons />
+          ) : showWeatherContent ? (
+            <div className={`flex flex-col gap-6 transition-opacity duration-200 ${refreshing ? 'opacity-60' : 'opacity-100'}`}>
+              {refreshing && (
+                <div className="sr-only" role="status" aria-live="polite">
+                  Updating weather data...
+                </div>
+              )}
               <AlertBanner />
               <CurrentWeather />
 
@@ -72,10 +82,55 @@ function WeatherApp() {
                 <Forecast />
                 <TemperatureChart />
               </div>
-            </>
-          )}
+            </div>
+          ) : null}
         </div>
       </main>
+    </div>
+  )
+}
+
+function WeatherSkeletons() {
+  return (
+    <div className="flex flex-col gap-6" role="status" aria-label="Loading weather data">
+      <div className="sr-only">Loading weather data...</div>
+      {/* Current weather skeleton */}
+      <div className="glass-card animate-pulse">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div className="h-9 w-40 rounded-lg bg-white/10" />
+            <div className="h-4 w-24 rounded bg-white/10 mt-2" />
+            <div className="h-16 w-48 rounded-lg bg-white/10 mt-3" />
+            <div className="h-5 w-32 rounded bg-white/10 mt-2" />
+          </div>
+          <div className="flex flex-row sm:flex-col gap-4 sm:gap-3">
+            <div className="h-10 w-24 rounded bg-white/10" />
+            <div className="h-10 w-24 rounded bg-white/10" />
+            <div className="h-10 w-24 rounded bg-white/10" />
+          </div>
+        </div>
+      </div>
+
+      {/* Forecast + Chart skeletons */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="glass-card animate-pulse">
+          <div className="h-6 w-32 rounded bg-white/10 mb-4" />
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="flex flex-col items-center gap-2 py-3">
+                <div className="h-4 w-10 rounded bg-white/10" />
+                <div className="h-7 w-7 rounded-full bg-white/10" />
+                <div className="h-5 w-10 rounded bg-white/10" />
+                <div className="h-4 w-8 rounded bg-white/10" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="glass-card animate-pulse">
+          <div className="h-6 w-40 rounded bg-white/10 mb-4" />
+          <div className="h-[200px] w-full rounded-lg bg-white/10" />
+        </div>
+      </div>
     </div>
   )
 }

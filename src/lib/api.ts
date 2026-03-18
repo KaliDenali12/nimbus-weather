@@ -8,6 +8,8 @@ const MIN_SEARCH_QUERY_LENGTH = 2
 const MAX_SEARCH_QUERY_LENGTH = 200
 const GEOCODING_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 const GEOCODING_CACHE_MAX_ENTRIES = 50
+const FORECAST_CACHE_TTL = 5 * 60 * 1000 // 5 minutes — weather doesn't change faster
+const FORECAST_CACHE_MAX_ENTRIES = 10
 export const FETCH_TIMEOUT_MS = 10_000 // 10s — generous to avoid false failures on slow networks
 
 interface CacheEntry<T> {
@@ -16,10 +18,20 @@ interface CacheEntry<T> {
 }
 
 const geocodingCache = new Map<string, CacheEntry<GeocodingResult[]>>()
+const forecastCache = new Map<string, CacheEntry<WeatherData>>()
 
 /** Clear the geocoding cache. Exposed for testing. */
 export function clearGeocodingCache(): void {
   geocodingCache.clear()
+}
+
+/** Clear the forecast cache. Exposed for testing. */
+export function clearForecastCache(): void {
+  forecastCache.clear()
+}
+
+function forecastCacheKey(lat: number, lon: number): string {
+  return `${lat.toFixed(2)},${lon.toFixed(2)}`
 }
 
 function isValidCoordinate(lat: number, lon: number): boolean {
@@ -125,6 +137,15 @@ export async function fetchWeather(
     throw new ApiError('Invalid coordinates: latitude must be -90..90, longitude must be -180..180')
   }
 
+  // Check forecast cache — revisiting a recent city returns instantly
+  const cacheKey = forecastCacheKey(lat, lon)
+  const now = Date.now()
+  const cached = forecastCache.get(cacheKey)
+  if (cached && now - cached.timestamp < FORECAST_CACHE_TTL) {
+    // Return cached data with updated city name (user may have searched differently)
+    return { ...cached.data, location: { ...cached.data.location, name: cityName, country } }
+  }
+
   const url = new URL(FORECAST_URL)
   url.searchParams.set('latitude', lat.toString())
   url.searchParams.set('longitude', lon.toString())
@@ -181,7 +202,7 @@ export async function fetchWeather(
     }),
   )
 
-  return {
+  const result: WeatherData = {
     current,
     daily,
     alerts: [], // Open-Meteo free tier doesn't provide alerts
@@ -193,6 +214,15 @@ export async function fetchWeather(
       timezone: data.timezone ?? 'UTC',
     },
   }
+
+  // Cache the result for fast revisits
+  if (forecastCache.size >= FORECAST_CACHE_MAX_ENTRIES) {
+    const oldestKey = forecastCache.keys().next().value
+    if (oldestKey !== undefined) forecastCache.delete(oldestKey)
+  }
+  forecastCache.set(cacheKey, { data: result, timestamp: now })
+
+  return result
 }
 
 /** Reverse geocode coordinates to city name using Open-Meteo */

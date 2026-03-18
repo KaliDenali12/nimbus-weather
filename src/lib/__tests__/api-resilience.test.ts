@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { searchCities, fetchWeather, reverseGeocode, ApiError, clearGeocodingCache, FETCH_TIMEOUT_MS } from '../api.ts'
+import { searchCities, fetchWeather, reverseGeocode, ApiError, clearGeocodingCache, clearForecastCache, FETCH_TIMEOUT_MS } from '../api.ts'
 
 /**
  * API Resilience Tests
@@ -11,6 +11,7 @@ import { searchCities, fetchWeather, reverseGeocode, ApiError, clearGeocodingCac
 beforeEach(() => {
   vi.restoreAllMocks()
   clearGeocodingCache()
+  clearForecastCache()
 })
 
 const VALID_FORECAST_RESPONSE = {

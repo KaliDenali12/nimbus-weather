@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   type ReactNode,
 } from 'react'
 import type {
@@ -30,6 +31,7 @@ import { getTheme, applyTheme } from '@/lib/theme.ts'
 interface WeatherContextValue {
   weather: WeatherData | null
   loading: boolean
+  refreshing: boolean
   error: string | null
   preferences: UserPreferences
   geoError: 'denied' | 'timeout' | 'unavailable' | null
@@ -54,9 +56,11 @@ const WeatherContext = createContext<WeatherContextValue | null>(null)
 export function WeatherProvider({ children }: { children: ReactNode }) {
   const [weather, setWeather] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [preferences, setPreferences] = useState<UserPreferences>(loadPreferences)
   const [geoError, setGeoError] = useState<WeatherContextValue['geoError']>(null)
+  const hasWeatherRef = useRef(false)
 
   const condition: WeatherCondition = useMemo(
     () => weather ? getWeatherCondition(weather.current.weatherCode) : 'clear',
@@ -80,11 +84,18 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
 
   const loadWeatherForCoords = useCallback(
     async (lat: number, lon: number, name: string, country: string) => {
-      setLoading(true)
+      // If we already have weather data, this is a refresh (city switch).
+      // Keep old data visible — only show full loading on initial load.
+      if (hasWeatherRef.current) {
+        setRefreshing(true)
+      } else {
+        setLoading(true)
+      }
       setError(null)
       try {
         const data = await fetchWeather(lat, lon, name, country)
         setWeather(data)
+        hasWeatherRef.current = true
       } catch (e) {
         if (e instanceof Error) {
           const status = getHttpStatus(e)
@@ -100,6 +111,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
         }
       } finally {
         setLoading(false)
+        setRefreshing(false)
       }
     },
     [],
@@ -173,6 +185,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   const contextValue = useMemo<WeatherContextValue>(() => ({
     weather,
     loading,
+    refreshing,
     error,
     preferences,
     geoError,
@@ -183,7 +196,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     toggleUnit,
     toggleDark,
     retry,
-  }), [weather, loading, error, preferences, geoError, condition, timeOfDay,
+  }), [weather, loading, refreshing, error, preferences, geoError, condition, timeOfDay,
     selectCity, searchForCities, toggleUnit, toggleDark, retry])
 
   return (
