@@ -4,7 +4,7 @@
 **Branch:** `nightytidy/run-2026-03-18-1312`
 **App:** Nimbus Weather (React 19 + Three.js + Open-Meteo, pure client-side)
 **Type:** Read-only analysis — no code changes
-**Tests:** 97 tests, 10 files — all passing (verified, no changes made)
+**Tests:** 270 tests, 29 files — all passing (verified, no changes made)
 
 ---
 
@@ -82,6 +82,9 @@ Based on UI copy, feature set, and design language:
 | **YR.no** | Current + forecast, clean UI | Norwegian meteorological accuracy, no ads, open data, clean design | Coarse outside Norway, limited features | Free (no ads) |
 | **Apple Weather** | Current + forecast, beautiful UI | Native iOS integration, Dark Sky acquisition data, minute-by-minute precipitation | iOS-only, limited customization | Free (built into iOS) |
 | **OpenWeatherMap** | API-based, similar developer audience | Massive API ecosystem, weather maps, historical data, 60+ satellite layers | Web app is basic, aimed at developers not consumers | Free tier; Paid API from $0 |
+| **Acme Weather** | Beautiful UI, forecast display | Forecast uncertainty visualization (confidence ranges), from Dark Sky founders, multi-source data | iOS-only, $25/year, new/unproven | $25/year |
+| **Overdrop** | Beautiful UI, weather display | 70+ widgets, 12 immersive animated themes, multiple data providers, privacy-first | Premium for full features, Android-focused | Free + ads; Premium |
+| **Weawow** | Weather display, privacy-first | Real photography backgrounds, swappable data sources, community-driven, 4.9-star rating | Less polished UI, photo quality varies | Free (donation-supported, no ads) |
 
 ### What Competitors Offer That Nimbus Doesn't
 
@@ -102,11 +105,12 @@ Based on UI copy, feature set, and design language:
 
 ### What Nimbus Does Better Than Competitors
 
-1. **Privacy**: Zero tracking, zero data collection, zero ads. Every major competitor either sells location data, shows ads, or both.
-2. **Visual experience**: The 3D weather scene + dynamic theming combination is genuinely unique. No major competitor has a real-time 3D diorama background.
-3. **Accessibility**: Most weather apps have poor screen reader support. Nimbus achieves WCAG 2.1 AA with thoughtful ARIA patterns.
-4. **Simplicity**: Zero onboarding friction — no account, no permissions nagging, no subscription prompts. Just weather.
-5. **Performance**: Skeleton loading, hover-prefetch, stale-while-revalidate — the perceived performance is excellent.
+1. **Privacy by architecture**: Not just a policy — there is literally no server to collect data. Stronger privacy story than even privacy-focused competitors like Carrot Weather or Weawow. The Weather Channel and AccuWeather have both been caught selling location data.
+2. **3D diorama experience**: After comprehensive research, **no consumer-facing weather app** uses a Three.js/R3F 3D diorama scene as atmospheric background. The 3D weather space is dominated by developer tutorials/demos (Codrops R3F weather tutorial) or enterprise mapping products (MapTiler, WeatherLayers). Nimbus's approach is genuinely novel in the market.
+3. **Dynamic theming depth**: 16 weather-time theme combinations is more comprehensive than most competitors. Only Overdrop (12 themes) and Carrot Weather (new "Sky" layout) approach this level of atmospheric responsiveness.
+4. **Accessibility**: WCAG 2.1 AA compliance is rare among weather apps. YR.no's high-contrast design and The Weather Gods' VoiceOver optimization are the closest competitors.
+5. **Zero friction**: No API keys, no account, no permissions nagging, no subscriptions. Only YR.no and Weawow match this frictionless experience.
+6. **Performance**: Skeleton loading, hover-prefetch, stale-while-revalidate — techniques not commonly seen in weather web apps.
 
 ### Market Trends
 
@@ -116,6 +120,8 @@ Based on UI copy, feature set, and design language:
 4. **Hyper-local and minute-level data**: AccuWeather's MinuteCast and Apple Weather's minute-by-minute precipitation have raised the bar.
 5. **Design-forward weather**: Apps like Carrot Weather and numerous Behance/Dribbble concepts prove users want weather apps that are *beautiful*, not just functional.
 6. **PWA adoption**: 18.9% of sites now use service workers (2025 HTTP Archive). Offline capability is increasingly expected.
+7. **Forecast uncertainty transparency**: Acme Weather (launched Feb 2026 by Dark Sky's original creators) pioneered showing confidence ranges instead of false precision. Users increasingly demand honesty about forecast limitations.
+8. **Subscription fatigue**: Users resist paying for weather data they view as a public utility. Free, ad-free apps (Weawow, YR.no) are gaining loyalty against subscription-heavy incumbents.
 
 ---
 
@@ -125,7 +131,7 @@ Based on UI copy, feature set, and design language:
 
 | # | Feature | User Need | Competitive Context | Complexity | Effort |
 |---|---------|-----------|-------------------|-----------|--------|
-| 1 | **Hourly forecast (24h)** | "What's the weather this afternoon?" — the #1 reason people check weather | Every single competitor has this. Open-Meteo provides hourly data for free. | Low — API endpoint already supports `hourly` param; add a new card component | Medium (1-2 weeks) |
+| 1 | **Hourly forecast (24h)** | "What's the weather this afternoon?" — the #1 reason people check weather | Every single competitor has this. Open-Meteo provides hourly data on the free tier — confirmed. | Low — API endpoint already supports `hourly` param; just add `hourly=temperature_2m,precipitation_probability,weather_code` to existing call. Add a new scrollable card component | Medium (1-2 weeks) |
 | 2 | **Sunrise/sunset display** | Basic context for day planning; currently only `isDay` boolean used | Universal feature. Open-Meteo daily response includes `sunrise` and `sunset`. | Low — just add to API params and display | Small (2-3 days) |
 | 3 | **URL-based city routing** | Shareable links ("here's the weather in Tokyo") | Every web-based competitor has URL routing | Medium — needs a client-side router or hash-based routing | Medium (1 week) |
 
