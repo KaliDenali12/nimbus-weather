@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { searchCities, fetchWeather, reverseGeocode, ApiError } from '../api.ts'
+import { searchCities, fetchWeather, reverseGeocode, ApiError, clearGeocodingCache } from '../api.ts'
 import type { GeocodingResult, WeatherData, CurrentWeather, DailyForecast } from '@/types/index.ts'
 
 /**
@@ -16,6 +16,7 @@ import type { GeocodingResult, WeatherData, CurrentWeather, DailyForecast } from
 
 beforeEach(() => {
   vi.restoreAllMocks()
+  clearGeocodingCache()
 })
 
 // --- Realistic Open-Meteo response fixtures ---

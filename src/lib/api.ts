@@ -6,6 +6,20 @@ const GEOCODING_RESULT_LIMIT = 8
 const FORECAST_DAYS = 6 // today + 5 days
 const MIN_SEARCH_QUERY_LENGTH = 2
 const MAX_SEARCH_QUERY_LENGTH = 200
+const GEOCODING_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+const GEOCODING_CACHE_MAX_ENTRIES = 50
+
+interface CacheEntry<T> {
+  data: T
+  timestamp: number
+}
+
+const geocodingCache = new Map<string, CacheEntry<GeocodingResult[]>>()
+
+/** Clear the geocoding cache. Exposed for testing. */
+export function clearGeocodingCache(): void {
+  geocodingCache.clear()
+}
 
 function isValidCoordinate(lat: number, lon: number): boolean {
   return (
@@ -63,6 +77,13 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
   if (trimmed.length < MIN_SEARCH_QUERY_LENGTH) return []
   if (trimmed.length > MAX_SEARCH_QUERY_LENGTH) return []
 
+  const cacheKey = trimmed.toLowerCase()
+  const now = Date.now()
+  const cached = geocodingCache.get(cacheKey)
+  if (cached && now - cached.timestamp < GEOCODING_CACHE_TTL) {
+    return cached.data
+  }
+
   const url = new URL(GEOCODING_URL)
   url.searchParams.set('name', trimmed)
   url.searchParams.set('count', GEOCODING_RESULT_LIMIT.toString())
@@ -73,7 +94,16 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
   if (!res.ok) throw new ApiError('Failed to search cities', res.status)
 
   const data: GeocodingApiResponse = await res.json()
-  return data.results ?? []
+  const results = data.results ?? []
+
+  // Evict oldest entries if cache is full
+  if (geocodingCache.size >= GEOCODING_CACHE_MAX_ENTRIES) {
+    const oldestKey = geocodingCache.keys().next().value
+    if (oldestKey !== undefined) geocodingCache.delete(oldestKey)
+  }
+  geocodingCache.set(cacheKey, { data: results, timestamp: now })
+
+  return results
 }
 
 export async function fetchWeather(

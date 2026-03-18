@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { searchCities, fetchWeather, ApiError } from '../api.ts'
+import { searchCities, fetchWeather, ApiError, clearGeocodingCache } from '../api.ts'
 
 const mockGeoResponse = {
   results: [
@@ -29,6 +29,7 @@ const mockForecastResponse = {
 
 beforeEach(() => {
   vi.restoreAllMocks()
+  clearGeocodingCache()
 })
 
 describe('searchCities', () => {
