@@ -12,6 +12,7 @@ import { ErrorState } from '@/components/ErrorState.tsx'
 import { Toast } from '@/components/Toast.tsx'
 import { WeatherScene } from '@/scenes/WeatherScene.tsx'
 import { SceneErrorBoundary } from '@/components/SceneErrorBoundary.tsx'
+import { AppErrorBoundary } from '@/components/AppErrorBoundary.tsx'
 
 function WeatherApp() {
   const { loading, error, geoError } = useWeather()
@@ -74,8 +75,10 @@ function WeatherApp() {
 
 export function App() {
   return (
-    <WeatherProvider>
-      <WeatherApp />
-    </WeatherProvider>
+    <AppErrorBoundary>
+      <WeatherProvider>
+        <WeatherApp />
+      </WeatherProvider>
+    </AppErrorBoundary>
   )
 }

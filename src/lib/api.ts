@@ -8,6 +8,7 @@ const MIN_SEARCH_QUERY_LENGTH = 2
 const MAX_SEARCH_QUERY_LENGTH = 200
 const GEOCODING_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 const GEOCODING_CACHE_MAX_ENTRIES = 50
+export const FETCH_TIMEOUT_MS = 10_000 // 10s — generous to avoid false failures on slow networks
 
 interface CacheEntry<T> {
   data: T
@@ -90,7 +91,15 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
   url.searchParams.set('language', 'en')
   url.searchParams.set('format', 'json')
 
-  const res = await fetch(url.toString())
+  let res: Response
+  try {
+    res = await fetch(url.toString(), { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) })
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'TimeoutError') {
+      throw new ApiError('City search timed out. Please check your connection and try again.')
+    }
+    throw new ApiError('Network error while searching for cities. Please check your connection.')
+  }
   if (!res.ok) throw new ApiError('Failed to search cities', res.status)
 
   const data: GeocodingApiResponse = await res.json()
@@ -130,26 +139,44 @@ export async function fetchWeather(
   url.searchParams.set('timezone', 'auto')
   url.searchParams.set('forecast_days', FORECAST_DAYS.toString())
 
-  const res = await fetch(url.toString())
+  let res: Response
+  try {
+    res = await fetch(url.toString(), { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) })
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'TimeoutError') {
+      throw new ApiError('Weather request timed out. Please check your connection and try again.')
+    }
+    throw new ApiError('Network error while fetching weather data. Please check your connection.')
+  }
   if (!res.ok) throw new ApiError('Failed to fetch weather data', res.status)
 
   const data: ForecastApiResponse = await res.json()
 
+  // Validate required response shape to prevent runtime crashes on malformed data
+  if (
+    !data.current ||
+    typeof data.current.temperature_2m !== 'number' ||
+    !data.daily ||
+    !Array.isArray(data.daily.time)
+  ) {
+    throw new ApiError('Received malformed weather data from the server.')
+  }
+
   const current: CurrentWeather = {
     temperature: data.current.temperature_2m,
-    feelsLike: data.current.apparent_temperature,
-    humidity: data.current.relative_humidity_2m,
-    windSpeed: data.current.wind_speed_10m,
-    weatherCode: data.current.weather_code,
+    feelsLike: data.current.apparent_temperature ?? data.current.temperature_2m,
+    humidity: data.current.relative_humidity_2m ?? 0,
+    windSpeed: data.current.wind_speed_10m ?? 0,
+    weatherCode: data.current.weather_code ?? 0,
     isDay: data.current.is_day === 1,
   }
 
   const daily: DailyForecast[] = data.daily.time.map(
     (date: string, i: number) => ({
       date,
-      weatherCode: data.daily.weather_code[i],
-      tempHigh: data.daily.temperature_2m_max[i],
-      tempLow: data.daily.temperature_2m_min[i],
+      weatherCode: data.daily.weather_code?.[i] ?? 0,
+      tempHigh: data.daily.temperature_2m_max?.[i] ?? 0,
+      tempLow: data.daily.temperature_2m_min?.[i] ?? 0,
       precipitationProbability: data.daily.precipitation_probability_max?.[i] ?? 0,
     }),
   )
@@ -184,7 +211,7 @@ export async function reverseGeocode(
   url.searchParams.set('format', 'json')
 
   try {
-    const res = await fetch(url.toString())
+    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) })
     if (!res.ok) return null
     const data: GeocodingApiResponse = await res.json()
     const result = data.results?.[0]

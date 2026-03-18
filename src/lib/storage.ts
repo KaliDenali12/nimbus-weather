@@ -13,8 +13,10 @@ function isValidCity(item: unknown): item is City {
     obj.name.length <= MAX_CITY_NAME_LENGTH &&
     typeof obj.lat === 'number' &&
     Number.isFinite(obj.lat) &&
+    obj.lat >= -90 && obj.lat <= 90 &&
     typeof obj.lon === 'number' &&
     Number.isFinite(obj.lon) &&
+    obj.lon >= -180 && obj.lon <= 180 &&
     typeof obj.country === 'string'
   )
 }
