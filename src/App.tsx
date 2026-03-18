@@ -24,6 +24,13 @@ function WeatherApp() {
 
   return (
     <div className="relative min-h-screen">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:glass-button focus:px-4 focus:py-2"
+      >
+        Skip to main content
+      </a>
+
       {/* 3D Background Scene */}
       <SceneErrorBoundary>
         <WeatherScene />
@@ -44,15 +51,15 @@ function WeatherApp() {
       )}
 
       {/* Main content */}
-      <main className="relative z-10 max-w-app mx-auto px-4 sm:px-6 pb-10">
+      <main id="main-content" className="relative z-10 max-w-app mx-auto px-4 sm:px-6 pb-10">
         <Header />
 
         <div className="flex flex-col gap-6 mt-2">
           {/* Search section */}
-          <div className="flex flex-col gap-3">
+          <section aria-label="City search" className="flex flex-col gap-3">
             <SearchBar />
             <RecentCities />
-          </div>
+          </section>
 
           {error ? (
             <ErrorState />

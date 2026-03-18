@@ -10,7 +10,7 @@ export function Header() {
         Nimbus
       </h1>
 
-      <div className="flex items-center gap-2">
+      <nav aria-label="Settings" className="flex items-center gap-2">
         <button
           className="glass-button flex items-center gap-1.5"
           onClick={toggleUnit}
@@ -31,7 +31,7 @@ export function Header() {
             <Moon size={16} aria-hidden="true" />
           )}
         </button>
-      </div>
+      </nav>
     </header>
   )
 }

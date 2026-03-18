@@ -34,7 +34,28 @@ export function TemperatureChart() {
         Temperature Trend
       </h3>
 
-      <div className="h-[200px] w-full">
+      {/* Screen-reader accessible data table (visually hidden) */}
+      <table className="sr-only">
+        <caption>Temperature highs and lows for the next 6 days</caption>
+        <thead>
+          <tr>
+            <th scope="col">Day</th>
+            <th scope="col">High</th>
+            <th scope="col">Low</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((d) => (
+            <tr key={d.name}>
+              <td>{d.name}</td>
+              <td>{d.high}{unitSymbol}</td>
+              <td>{d.low}{unitSymbol}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="h-[200px] w-full" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
             <defs>

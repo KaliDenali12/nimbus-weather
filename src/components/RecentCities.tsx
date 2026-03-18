@@ -15,6 +15,7 @@ export function RecentCities() {
           role="listitem"
           className="glass-chip flex items-center gap-1.5"
           onClick={() => selectCity(city)}
+          aria-label={`View weather for ${city.name}, ${city.country}`}
         >
           <MapPin size={11} className="opacity-50" aria-hidden="true" />
           <span>{city.name}</span>

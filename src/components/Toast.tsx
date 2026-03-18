@@ -39,12 +39,12 @@ export function Toast({ message, duration = 5000, onDismiss }: ToastProps) {
         border: '1px solid rgba(255, 255, 255, 0.1)',
       }}
     >
-      <span className="font-body text-[14px] font-medium text-white/90">
+      <span className="font-body text-body-sm font-medium text-white/90">
         {message}
       </span>
       <button
         onClick={dismiss}
-        className="ml-1 p-0.5 hover:bg-white/10 rounded transition-colors"
+        className="ml-1 p-1 hover:bg-white/10 rounded transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/50"
         aria-label="Dismiss notification"
       >
         <X size={14} className="text-white/60" />

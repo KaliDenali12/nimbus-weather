@@ -5,7 +5,7 @@ export function ErrorState() {
   const { error, retry } = useWeather()
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="flex items-center justify-center min-h-[60vh]" role="alert">
       <div className="glass-card text-center max-w-md">
         <CloudOff size={48} className="mx-auto mb-4 opacity-40" aria-hidden="true" />
         <h2 className="font-display text-heading-2 mb-2">

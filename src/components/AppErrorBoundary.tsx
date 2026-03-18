@@ -31,6 +31,7 @@ export class AppErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div
+          role="alert"
           style={{
             minHeight: '100vh',
             display: 'flex',
