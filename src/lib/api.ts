@@ -5,6 +5,18 @@ const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 const GEOCODING_RESULT_LIMIT = 8
 const FORECAST_DAYS = 6 // today + 5 days
 const MIN_SEARCH_QUERY_LENGTH = 2
+const MAX_SEARCH_QUERY_LENGTH = 200
+
+function isValidCoordinate(lat: number, lon: number): boolean {
+  return (
+    Number.isFinite(lat) &&
+    Number.isFinite(lon) &&
+    lat >= -90 &&
+    lat <= 90 &&
+    lon >= -180 &&
+    lon <= 180
+  )
+}
 
 /** Raw shape of the Open-Meteo geocoding API response */
 interface GeocodingApiResponse {
@@ -47,10 +59,12 @@ export class ApiError extends Error {
 }
 
 export async function searchCities(query: string): Promise<GeocodingResult[]> {
-  if (query.trim().length < MIN_SEARCH_QUERY_LENGTH) return []
+  const trimmed = query.trim()
+  if (trimmed.length < MIN_SEARCH_QUERY_LENGTH) return []
+  if (trimmed.length > MAX_SEARCH_QUERY_LENGTH) return []
 
   const url = new URL(GEOCODING_URL)
-  url.searchParams.set('name', query.trim())
+  url.searchParams.set('name', trimmed)
   url.searchParams.set('count', GEOCODING_RESULT_LIMIT.toString())
   url.searchParams.set('language', 'en')
   url.searchParams.set('format', 'json')
@@ -68,6 +82,10 @@ export async function fetchWeather(
   cityName: string,
   country: string,
 ): Promise<WeatherData> {
+  if (!isValidCoordinate(lat, lon)) {
+    throw new ApiError('Invalid coordinates: latitude must be -90..90, longitude must be -180..180')
+  }
+
   const url = new URL(FORECAST_URL)
   url.searchParams.set('latitude', lat.toString())
   url.searchParams.set('longitude', lon.toString())
@@ -125,6 +143,8 @@ export async function reverseGeocode(
   lat: number,
   lon: number,
 ): Promise<{ name: string; country: string } | null> {
+  if (!isValidCoordinate(lat, lon)) return null
+
   // Open-Meteo doesn't have a reverse geocoding endpoint,
   // so we search with coords rounded to get the nearest city.
   const url = new URL(GEOCODING_URL)
