@@ -4,6 +4,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useMemo,
   type ReactNode,
 } from 'react'
 import type {
@@ -167,23 +168,24 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     initializeLocation()
   }, [initializeLocation])
 
+  const contextValue = useMemo<WeatherContextValue>(() => ({
+    weather,
+    loading,
+    error,
+    preferences,
+    geoError,
+    condition,
+    timeOfDay,
+    selectCity,
+    searchForCities,
+    toggleUnit,
+    toggleDark,
+    retry,
+  }), [weather, loading, error, preferences, geoError, condition, timeOfDay,
+    selectCity, searchForCities, toggleUnit, toggleDark, retry])
+
   return (
-    <WeatherContext.Provider
-      value={{
-        weather,
-        loading,
-        error,
-        preferences,
-        geoError,
-        condition,
-        timeOfDay,
-        selectCity,
-        searchForCities,
-        toggleUnit,
-        toggleDark,
-        retry,
-      }}
-    >
+    <WeatherContext.Provider value={contextValue}>
       {children}
     </WeatherContext.Provider>
   )

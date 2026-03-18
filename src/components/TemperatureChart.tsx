@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import {
   AreaChart,
   Area,
@@ -16,11 +17,14 @@ export function TemperatureChart() {
 
   const unit = preferences.unitPreference
 
-  const data = weather.daily.slice(0, 6).map((day, i) => ({
-    name: formatDayName(day.date, i),
-    high: convertTemp(day.tempHigh, unit),
-    low: convertTemp(day.tempLow, unit),
-  }))
+  const data = useMemo(() =>
+    weather.daily.slice(0, 6).map((day, i) => ({
+      name: formatDayName(day.date, i),
+      high: convertTemp(day.tempHigh, unit),
+      low: convertTemp(day.tempLow, unit),
+    })),
+    [weather.daily, unit],
+  )
 
   const unitSymbol = unit === 'celsius' ? '°C' : '°F'
 
