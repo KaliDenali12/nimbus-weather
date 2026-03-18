@@ -58,12 +58,14 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   const [preferences, setPreferences] = useState<UserPreferences>(loadPreferences)
   const [geoError, setGeoError] = useState<WeatherContextValue['geoError']>(null)
 
-  const condition: WeatherCondition = weather
-    ? getWeatherCondition(weather.current.weatherCode)
-    : 'clear'
-  const timeOfDay: TimeOfDay = weather
-    ? weather.current.isDay ? 'day' : 'night'
-    : 'day'
+  const condition: WeatherCondition = useMemo(
+    () => weather ? getWeatherCondition(weather.current.weatherCode) : 'clear',
+    [weather],
+  )
+  const timeOfDay: TimeOfDay = useMemo(
+    () => weather ? (weather.current.isDay ? 'day' : 'night') : 'day',
+    [weather],
+  )
 
   // Apply theme whenever condition, time, or dark mode changes
   useEffect(() => {
