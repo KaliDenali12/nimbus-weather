@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { loadPreferences, savePreferences, addRecentCity, setUnit, toggleDarkMode } from '../storage.ts'
+import { loadPreferences, savePreferences, addRecentCity, setUnit, toggleDarkMode, toggleScene } from '../storage.ts'
 import type { UserPreferences, City } from '@/types/index.ts'
 
 const mockCity: City = { name: 'Tokyo', lat: 35.68, lon: 139.69, country: 'Japan' }
@@ -37,6 +37,7 @@ describe('loadPreferences', () => {
     const saved: UserPreferences = {
       unitPreference: 'fahrenheit',
       darkModeEnabled: true,
+      sceneDisabled: false,
       recentCities: [mockCity],
     }
     localStorage.setItem('nimbus-preferences', JSON.stringify(saved))
@@ -97,6 +98,7 @@ describe('savePreferences', () => {
     const prefs: UserPreferences = {
       unitPreference: 'fahrenheit',
       darkModeEnabled: true,
+      sceneDisabled: false,
       recentCities: [mockCity],
     }
     savePreferences(prefs)
@@ -183,5 +185,40 @@ describe('toggleDarkMode', () => {
   it('toggles from true to false', () => {
     const prefs = { ...loadPreferences(), darkModeEnabled: true }
     expect(toggleDarkMode(prefs).darkModeEnabled).toBe(false)
+  })
+})
+
+describe('loadPreferences — sceneDisabled', () => {
+  it('returns sceneDisabled: false by default when not in localStorage', () => {
+    const prefs = loadPreferences()
+    expect(prefs.sceneDisabled).toBe(false)
+  })
+
+  it('correctly loads sceneDisabled: true when stored', () => {
+    localStorage.setItem('nimbus-preferences', JSON.stringify({
+      sceneDisabled: true,
+    }))
+    const prefs = loadPreferences()
+    expect(prefs.sceneDisabled).toBe(true)
+  })
+
+  it('defaults to false when sceneDisabled has invalid type', () => {
+    localStorage.setItem('nimbus-preferences', JSON.stringify({
+      sceneDisabled: 'yes',
+    }))
+    const prefs = loadPreferences()
+    expect(prefs.sceneDisabled).toBe(false)
+  })
+})
+
+describe('toggleScene', () => {
+  it('flips sceneDisabled from false to true', () => {
+    const prefs = loadPreferences()
+    expect(toggleScene(prefs).sceneDisabled).toBe(true)
+  })
+
+  it('flips sceneDisabled from true to false', () => {
+    const prefs = { ...loadPreferences(), sceneDisabled: true }
+    expect(toggleScene(prefs).sceneDisabled).toBe(false)
   })
 })

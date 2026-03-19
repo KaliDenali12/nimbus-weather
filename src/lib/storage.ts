@@ -24,6 +24,7 @@ function isValidCity(item: unknown): item is City {
 const DEFAULTS: UserPreferences = {
   unitPreference: 'celsius',
   darkModeEnabled: false,
+  sceneDisabled: false,
   recentCities: [],
 }
 
@@ -50,6 +51,10 @@ export function loadPreferences(): UserPreferences {
         typeof obj.darkModeEnabled === 'boolean'
           ? obj.darkModeEnabled
           : DEFAULTS.darkModeEnabled,
+      sceneDisabled:
+        typeof obj.sceneDisabled === 'boolean'
+          ? obj.sceneDisabled
+          : DEFAULTS.sceneDisabled,
       recentCities: Array.isArray(obj.recentCities)
         ? (obj.recentCities as unknown[]).filter(isValidCity).slice(0, MAX_RECENT_CITIES)
         : [],
@@ -82,4 +87,8 @@ export function setUnit(prefs: UserPreferences, unit: TemperatureUnit): UserPref
 
 export function toggleDarkMode(prefs: UserPreferences): UserPreferences {
   return { ...prefs, darkModeEnabled: !prefs.darkModeEnabled }
+}
+
+export function toggleScene(prefs: UserPreferences): UserPreferences {
+  return { ...prefs, sceneDisabled: !prefs.sceneDisabled }
 }

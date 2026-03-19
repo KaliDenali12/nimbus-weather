@@ -1,8 +1,8 @@
-import { Sun, Moon, Thermometer } from 'lucide-react'
+import { Sun, Moon, Thermometer, Monitor, MonitorOff } from 'lucide-react'
 import { useWeather } from '@/context/WeatherContext.tsx'
 
 export function Header() {
-  const { preferences, toggleUnit, toggleDark } = useWeather()
+  const { preferences, toggleUnit, toggleDark, toggleScene } = useWeather()
 
   return (
     <header className="flex items-center justify-between py-4">
@@ -18,6 +18,18 @@ export function Header() {
         >
           <Thermometer size={16} aria-hidden="true" />
           <span>{preferences.unitPreference === 'celsius' ? '°C' : '°F'}</span>
+        </button>
+
+        <button
+          className="glass-button flex items-center gap-1.5"
+          onClick={toggleScene}
+          aria-label={`${preferences.sceneDisabled ? 'Enable' : 'Disable'} 3D scene`}
+        >
+          {preferences.sceneDisabled ? (
+            <MonitorOff size={16} aria-hidden="true" />
+          ) : (
+            <Monitor size={16} aria-hidden="true" />
+          )}
         </button>
 
         <button

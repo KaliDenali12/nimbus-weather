@@ -57,6 +57,7 @@ const mockWeatherData: WeatherData = {
     { date: '2026-03-21', tempHigh: 19, tempLow: 11, weatherCode: 0, precipitationProbability: 5 },
     { date: '2026-03-22', tempHigh: 21, tempLow: 13, weatherCode: 2, precipitationProbability: 15 },
   ],
+  hourly: [],
   alerts: [],
 }
 

@@ -7,6 +7,7 @@ const mockToggleDark = vi.fn()
 let mockPreferences = {
   unitPreference: 'celsius' as const,
   darkModeEnabled: false,
+  sceneDisabled: false,
   recentCities: [],
 }
 
@@ -23,6 +24,7 @@ beforeEach(() => {
   mockPreferences = {
     unitPreference: 'celsius',
     darkModeEnabled: false,
+    sceneDisabled: false,
     recentCities: [],
   }
 })

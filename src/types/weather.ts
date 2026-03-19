@@ -47,9 +47,17 @@ export interface WeatherAlert {
   end: string
 }
 
+export interface HourlyForecast {
+  time: string        // ISO datetime
+  temperature: number // in Celsius (raw from API)
+  weatherCode: number
+  precipitationProbability: number
+}
+
 export interface WeatherData {
   current: CurrentWeather
   daily: DailyForecast[]
+  hourly: HourlyForecast[]
   alerts: WeatherAlert[]
   location: {
     name: string
@@ -73,6 +81,7 @@ export type TemperatureUnit = 'celsius' | 'fahrenheit'
 export interface UserPreferences {
   unitPreference: TemperatureUnit
   darkModeEnabled: boolean
+  sceneDisabled: boolean
   recentCities: City[]
 }
 

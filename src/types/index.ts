@@ -4,6 +4,7 @@ export type {
   GeocodingResult,
   CurrentWeather,
   DailyForecast,
+  HourlyForecast,
   WeatherAlert,
   WeatherData,
   City,

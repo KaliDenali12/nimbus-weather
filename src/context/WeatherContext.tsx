@@ -24,9 +24,11 @@ import {
   addRecentCity,
   setUnit,
   toggleDarkMode,
+  toggleScene as toggleScenePrefs,
 } from '@/lib/storage.ts'
 import { getWeatherCondition } from '@/lib/weather-codes.ts'
 import { getTheme, applyTheme } from '@/lib/theme.ts'
+import { parseCityFromUrl, updateUrlWithCity, clearUrlParams } from '@/lib/url.ts'
 
 interface WeatherContextValue {
   weather: WeatherData | null
@@ -35,12 +37,14 @@ interface WeatherContextValue {
   error: string | null
   preferences: UserPreferences
   geoError: 'denied' | 'timeout' | 'unavailable' | null
+  loadingCityKey: string | null
   condition: WeatherCondition
   timeOfDay: TimeOfDay
   selectCity: (city: City) => void
   searchForCities: (query: string) => Promise<GeocodingResult[]>
   toggleUnit: () => void
   toggleDark: () => void
+  toggleScene: () => void
   retry: () => void
 }
 
@@ -60,6 +64,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null)
   const [preferences, setPreferences] = useState<UserPreferences>(loadPreferences)
   const [geoError, setGeoError] = useState<WeatherContextValue['geoError']>(null)
+  const [loadingCityKey, setLoadingCityKey] = useState<string | null>(null)
   const hasWeatherRef = useRef(false)
 
   const condition: WeatherCondition = useMemo(
@@ -91,6 +96,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
       } else {
         setLoading(true)
       }
+      setLoadingCityKey(`${lat},${lon}`)
       setError(null)
       try {
         const data = await fetchWeather(lat, lon, name, country)
@@ -112,6 +118,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
       } finally {
         setLoading(false)
         setRefreshing(false)
+        setLoadingCityKey(null)
       }
     },
     [],
@@ -119,6 +126,24 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
 
   const initializeLocation = useCallback(async () => {
     setLoading(true)
+
+    // Priority: URL params > recentCities[0] > geolocation > Antarctica
+    const urlCity = parseCityFromUrl()
+    if (urlCity) {
+      await loadWeatherForCoords(urlCity.lat, urlCity.lon, urlCity.name, urlCity.country)
+      return
+    }
+
+    const prefs = loadPreferences()
+    const lastCity = prefs.recentCities[0]
+    if (lastCity) {
+      await loadWeatherForCoords(lastCity.lat, lastCity.lon, lastCity.name, lastCity.country)
+      return
+    }
+
+    // No URL or recent city — clear any stale URL params
+    clearUrlParams()
+
     const result = await getUserLocation()
 
     if (result.ok) {
@@ -158,6 +183,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   const selectCity = useCallback(
     (city: City) => {
       setPreferences((prev) => addRecentCity(prev, city))
+      updateUrlWithCity(city)
       loadWeatherForCoords(city.lat, city.lon, city.name, city.country)
     },
     [loadWeatherForCoords],
@@ -178,6 +204,10 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     setPreferences(toggleDarkMode)
   }, [])
 
+  const toggleSceneAction = useCallback(() => {
+    setPreferences(toggleScenePrefs)
+  }, [])
+
   const retry = useCallback(() => {
     initializeLocation()
   }, [initializeLocation])
@@ -189,15 +219,17 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     error,
     preferences,
     geoError,
+    loadingCityKey,
     condition,
     timeOfDay,
     selectCity,
     searchForCities,
     toggleUnit,
     toggleDark,
+    toggleScene: toggleSceneAction,
     retry,
-  }), [weather, loading, refreshing, error, preferences, geoError, condition, timeOfDay,
-    selectCity, searchForCities, toggleUnit, toggleDark, retry])
+  }), [weather, loading, refreshing, error, preferences, geoError, loadingCityKey, condition, timeOfDay,
+    selectCity, searchForCities, toggleUnit, toggleDark, toggleSceneAction, retry])
 
   return (
     <WeatherContext.Provider value={contextValue}>

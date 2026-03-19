@@ -16,6 +16,13 @@ vi.mock('@/lib/geolocation.ts', () => ({
   ANTARCTICA: { latitude: -82.86, longitude: 135.0, name: 'Antarctica', country: 'AQ' },
 }))
 
+// Mock URL module to prevent cross-test state leakage via history.replaceState
+vi.mock('@/lib/url.ts', () => ({
+  parseCityFromUrl: vi.fn().mockReturnValue(null),
+  updateUrlWithCity: vi.fn(),
+  clearUrlParams: vi.fn(),
+}))
+
 // Mock theme module (applyTheme mutates DOM)
 vi.mock('@/lib/theme.ts', () => ({
   getTheme: vi.fn().mockReturnValue({
@@ -51,6 +58,7 @@ const mockWeatherData: WeatherData = {
     { date: '2026-03-17', tempHigh: 24, tempLow: 15, weatherCode: 0, precipitationProbability: 10 },
     { date: '2026-03-18', tempHigh: 22, tempLow: 14, weatherCode: 1, precipitationProbability: 20 },
   ],
+  hourly: [],
   alerts: [],
 }
 

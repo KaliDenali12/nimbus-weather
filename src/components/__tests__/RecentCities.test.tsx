@@ -10,6 +10,7 @@ const london: City = { name: 'London', lat: 51.51, lon: -0.13, country: 'UK' }
 let mockPreferences: UserPreferences = {
   unitPreference: 'celsius',
   darkModeEnabled: false,
+  sceneDisabled: false,
   recentCities: [tokyo, london],
 }
 
@@ -25,6 +26,7 @@ beforeEach(() => {
   mockPreferences = {
     unitPreference: 'celsius',
     darkModeEnabled: false,
+    sceneDisabled: false,
     recentCities: [tokyo, london],
   }
 })

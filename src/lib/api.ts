@@ -1,4 +1,4 @@
-import type { GeocodingResult, WeatherData, DailyForecast, CurrentWeather } from '@/types/index.ts'
+import type { GeocodingResult, WeatherData, DailyForecast, HourlyForecast, CurrentWeather } from '@/types/index.ts'
 
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
@@ -69,10 +69,19 @@ interface ForecastDailyBlock {
   precipitation_probability_max?: number[]
 }
 
+/** Raw shape of the Open-Meteo forecast API "hourly" block */
+interface ForecastHourlyBlock {
+  time: string[]
+  temperature_2m: number[]
+  weather_code: number[]
+  precipitation_probability: number[]
+}
+
 /** Raw shape of the Open-Meteo forecast API response */
 interface ForecastApiResponse {
   current: ForecastCurrentBlock
   daily: ForecastDailyBlock
+  hourly?: ForecastHourlyBlock
   timezone?: string
 }
 
@@ -157,6 +166,10 @@ export async function fetchWeather(
     'daily',
     'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max',
   )
+  url.searchParams.set(
+    'hourly',
+    'temperature_2m,weather_code,precipitation_probability',
+  )
   url.searchParams.set('timezone', 'auto')
   url.searchParams.set('forecast_days', FORECAST_DAYS.toString())
 
@@ -202,9 +215,27 @@ export async function fetchWeather(
     }),
   )
 
+  // Parse hourly data and filter to next 24 hours from now
+  const hourly: HourlyForecast[] = []
+  if (data.hourly && Array.isArray(data.hourly.time)) {
+    const nowMs = Date.now()
+    for (let i = 0; i < data.hourly.time.length; i++) {
+      const timeMs = new Date(data.hourly.time[i]).getTime()
+      if (timeMs >= nowMs && hourly.length < 24) {
+        hourly.push({
+          time: data.hourly.time[i],
+          temperature: data.hourly.temperature_2m?.[i] ?? 0,
+          weatherCode: data.hourly.weather_code?.[i] ?? 0,
+          precipitationProbability: data.hourly.precipitation_probability?.[i] ?? 0,
+        })
+      }
+    }
+  }
+
   const result: WeatherData = {
     current,
     daily,
+    hourly,
     alerts: [], // Open-Meteo free tier doesn't provide alerts
     location: {
       name: cityName,

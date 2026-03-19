@@ -26,6 +26,7 @@ const baseWeather: WeatherData = {
   location: { name: 'Tokyo', country: 'Japan', latitude: 35.68, longitude: 139.69, timezone: 'Asia/Tokyo' },
   current: { temperature: 22, feelsLike: 20, humidity: 65, windSpeed: 12, weatherCode: 0, isDay: true },
   daily: [],
+  hourly: [],
   alerts: [],
 }
 

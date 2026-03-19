@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { searchCities, fetchWeather, ApiError, clearGeocodingCache, clearForecastCache } from '../api.ts'
 
 const mockGeoResponse = {
@@ -169,5 +169,115 @@ describe('fetchWeather', () => {
     await expect(fetchWeather(90, 180, 'X', 'Y')).resolves.toBeDefined()
     await expect(fetchWeather(-90, -180, 'X', 'Y')).resolves.toBeDefined()
     await expect(fetchWeather(0, 0, 'X', 'Y')).resolves.toBeDefined()
+  })
+})
+
+describe('hourly data parsing', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('fetchWeather includes hourly data in response', async () => {
+    const responseWithHourly = {
+      ...mockForecastResponse,
+      hourly: {
+        time: [
+          '2026-03-19T12:00',
+          '2026-03-19T13:00',
+          '2026-03-19T14:00',
+        ],
+        temperature_2m: [14.2, 15.0, 14.8],
+        weather_code: [3, 61, 2],
+        precipitation_probability: [10, 80, 20],
+      },
+    }
+
+    // Set time before the hourly entries so they all pass the >= now filter
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(new Date('2026-03-19T11:00:00'))
+
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(responseWithHourly),
+    } as Response)
+
+    const data = await fetchWeather(51.51, -0.13, 'London', 'United Kingdom')
+
+    expect(data.hourly).toHaveLength(3)
+    expect(data.hourly[0]).toEqual({
+      time: '2026-03-19T12:00',
+      temperature: 14.2,
+      weatherCode: 3,
+      precipitationProbability: 10,
+    })
+    expect(data.hourly[1]).toEqual({
+      time: '2026-03-19T13:00',
+      temperature: 15.0,
+      weatherCode: 61,
+      precipitationProbability: 80,
+    })
+    expect(data.hourly[2]).toEqual({
+      time: '2026-03-19T14:00',
+      temperature: 14.8,
+      weatherCode: 2,
+      precipitationProbability: 20,
+    })
+  })
+
+  it('hourly data is filtered to next 24 hours from now', async () => {
+    // Generate 48 hours of hourly data starting at 2026-03-19T00:00
+    const times: string[] = []
+    const temps: number[] = []
+    const codes: number[] = []
+    const precips: number[] = []
+    for (let h = 0; h < 48; h++) {
+      const hour = h % 24
+      const day = 19 + Math.floor(h / 24)
+      times.push(`2026-03-${day}T${String(hour).padStart(2, '0')}:00`)
+      temps.push(10 + h)
+      codes.push(0)
+      precips.push(0)
+    }
+
+    const responseWithHourly = {
+      ...mockForecastResponse,
+      hourly: {
+        time: times,
+        temperature_2m: temps,
+        weather_code: codes,
+        precipitation_probability: precips,
+      },
+    }
+
+    // Set current time to 2026-03-19T10:00 — expect hours 10..23 on day 19 + 00..09 on day 20 = 24 entries
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(new Date('2026-03-19T10:00:00'))
+
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(responseWithHourly),
+    } as Response)
+
+    const data = await fetchWeather(51.51, -0.13, 'London', 'United Kingdom')
+
+    expect(data.hourly).toHaveLength(24)
+    // First entry should be the 10:00 hour (index 10 in our generated data)
+    expect(data.hourly[0]!.time).toBe('2026-03-19T10:00')
+    expect(data.hourly[0]!.temperature).toBe(20) // 10 + 10
+    // Last entry should be 09:00 on the next day (index 33 in our generated data)
+    expect(data.hourly[23]!.time).toBe('2026-03-20T09:00')
+    expect(data.hourly[23]!.temperature).toBe(43) // 10 + 33
+  })
+
+  it('hourly data is empty array when API returns no hourly block', async () => {
+    // mockForecastResponse has no hourly property
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockForecastResponse),
+    } as Response)
+
+    const data = await fetchWeather(51.51, -0.13, 'London', 'United Kingdom')
+
+    expect(data.hourly).toEqual([])
   })
 })

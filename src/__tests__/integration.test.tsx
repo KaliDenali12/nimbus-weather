@@ -12,6 +12,12 @@ vi.mock('@/lib/geolocation.ts', () => ({
   ANTARCTICA: { latitude: -82.86, longitude: 135.0, name: 'Antarctica', country: 'AQ' },
 }))
 
+vi.mock('@/lib/url.ts', () => ({
+  parseCityFromUrl: vi.fn().mockReturnValue(null),
+  updateUrlWithCity: vi.fn(),
+  clearUrlParams: vi.fn(),
+}))
+
 vi.mock('@/lib/theme.ts', () => ({
   getTheme: vi.fn().mockReturnValue({
     bgGradient: 'linear-gradient(to bottom, #87CEEB, #E0F7FA)',
@@ -43,6 +49,7 @@ const tokyoWeather: WeatherData = {
     { date: '2026-03-21', tempHigh: 19, tempLow: 11, weatherCode: 0, precipitationProbability: 5 },
     { date: '2026-03-22', tempHigh: 21, tempLow: 13, weatherCode: 2, precipitationProbability: 15 },
   ],
+  hourly: [],
   alerts: [],
 }
 
@@ -57,6 +64,7 @@ const londonWeather: WeatherData = {
     { date: '2026-03-21', tempHigh: 15, tempLow: 8, weatherCode: 1, precipitationProbability: 15 },
     { date: '2026-03-22', tempHigh: 13, tempLow: 6, weatherCode: 51, precipitationProbability: 60 },
   ],
+  hourly: [],
   alerts: [],
 }
 

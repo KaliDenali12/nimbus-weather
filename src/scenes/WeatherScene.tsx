@@ -19,7 +19,7 @@ const canvasStyle = { background: 'transparent' }
 export function WeatherScene() {
   const { weather, condition, timeOfDay, preferences } = useWeather()
 
-  if (!weather) return null
+  if (!weather || preferences.sceneDisabled) return null
 
   const isDark = preferences.darkModeEnabled
 

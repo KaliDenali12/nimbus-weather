@@ -9,6 +9,7 @@ import { TemperatureChart } from '@/components/TemperatureChart.tsx'
 import { AlertBanner } from '@/components/AlertBanner.tsx'
 import { ErrorState } from '@/components/ErrorState.tsx'
 import { Toast } from '@/components/Toast.tsx'
+import { HourlyForecast } from '@/components/HourlyForecast.tsx'
 import { WeatherScene } from '@/scenes/WeatherScene.tsx'
 import { SceneErrorBoundary } from '@/components/SceneErrorBoundary.tsx'
 import { AppErrorBoundary } from '@/components/AppErrorBoundary.tsx'
@@ -77,6 +78,7 @@ function WeatherApp() {
               )}
               <AlertBanner />
               <CurrentWeather />
+              <HourlyForecast />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Forecast />
@@ -108,6 +110,20 @@ function WeatherSkeletons() {
             <div className="h-10 w-24 rounded bg-white/10" />
             <div className="h-10 w-24 rounded bg-white/10" />
           </div>
+        </div>
+      </div>
+
+      {/* Hourly forecast skeleton */}
+      <div className="glass-card animate-pulse">
+        <div className="h-6 w-36 rounded bg-white/10 mb-3" />
+        <div className="flex gap-3 overflow-hidden">
+          {Array.from({ length: 8 }, (_, i) => (
+            <div key={i} className="flex flex-col items-center gap-1.5 min-w-[60px] py-2">
+              <div className="h-3 w-8 rounded bg-white/10" />
+              <div className="h-5 w-5 rounded-full bg-white/10" />
+              <div className="h-4 w-8 rounded bg-white/10" />
+            </div>
+          ))}
         </div>
       </div>
 

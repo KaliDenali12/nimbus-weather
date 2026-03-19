@@ -20,6 +20,7 @@ const mockWeatherData: WeatherData = {
     isDay: true,
   },
   daily: [],
+  hourly: [],
   alerts: [],
 }
 
@@ -27,6 +28,7 @@ let mockWeather: WeatherData | null = mockWeatherData
 let mockPreferences: UserPreferences = {
   unitPreference: 'celsius',
   darkModeEnabled: false,
+  sceneDisabled: false,
   recentCities: [],
 }
 
@@ -42,6 +44,7 @@ beforeEach(() => {
   mockPreferences = {
     unitPreference: 'celsius',
     darkModeEnabled: false,
+    sceneDisabled: false,
     recentCities: [],
   }
 })
