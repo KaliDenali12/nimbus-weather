@@ -2,7 +2,7 @@
 
 Portfolio-grade client-side weather app: React 19 + TypeScript 5.9 + Three.js + Open-Meteo. No backend, no API keys, no auth. Dynamic weather-driven theming with 3D diorama background.
 
-**Deploy**: https://test-feb26.netlify.app | **Repo**: https://github.com/KaliDenali12/nimbus-weather
+**Deploy**: https://nimbus-weather-kd.netlify.app | **Repo**: https://github.com/KaliDenali12/nimbus-weather
 
 ---
 

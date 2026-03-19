@@ -364,4 +364,4 @@ This audit was conducted by:
 - Who actually has access to GitHub, Netlify, and domain registrar accounts
 - Whether local clones exist on developer machines
 - Whether Netlify account has 2FA enabled
-- Custom domain configuration details (if any beyond `test-feb26.netlify.app`)
+- Custom domain configuration details (if any beyond `nimbus-weather-kd.netlify.app`)

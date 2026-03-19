@@ -400,7 +400,7 @@ Since there are no application-level credentials, credential compromise only aff
 | GitHub repository | https://github.com/KaliDenali12/nimbus-weather | ⚠️ TEAM INPUT NEEDED |
 | Netlify dashboard | ⚠️ TEAM INPUT NEEDED | ⚠️ TEAM INPUT NEEDED |
 | Domain registrar | ⚠️ TEAM INPUT NEEDED | ⚠️ TEAM INPUT NEEDED |
-| Deployed application | https://test-feb26.netlify.app | Public |
+| Deployed application | https://nimbus-weather-kd.netlify.app | Public |
 
 ### 7.3 External Service Status Pages
 

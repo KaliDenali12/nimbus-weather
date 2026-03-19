@@ -100,7 +100,7 @@ jobs:
 
 **Implementation:**
 1. Sign up at [UptimeRobot](https://uptimerobot.com/) (free tier: 50 monitors, 5-min checks)
-2. Add monitor: `https://test-feb26.netlify.app`
+2. Add monitor: `https://nimbus-weather-kd.netlify.app`
 3. Configure alert: email + ⚠️ TEAM INPUT NEEDED: Slack/SMS if desired
 
 **Effort:** 5 minutes.

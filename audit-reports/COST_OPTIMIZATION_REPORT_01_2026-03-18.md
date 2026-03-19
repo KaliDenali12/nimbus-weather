@@ -152,7 +152,7 @@ N/A — no serverless functions.
 |-------------|---------------|------------|-------------------|----------|
 | Development | Local `vite dev` | No (on-demand) | Same code | N/A |
 | Preview | Netlify deploy preview | No (on-demand) | Same build | Auto-cleanup by Netlify |
-| Production | `test-feb26.netlify.app` | Yes (static CDN) | N/A | N/A |
+| Production | `nimbus-weather-kd.netlify.app` | Yes (static CDN) | N/A | N/A |
 
 **No paid tool seats.** All tools (Vite, Vitest, ESLint, TypeScript) are open-source.
 **No non-prod cost waste identified.**
@@ -229,7 +229,7 @@ This is a genuinely zero-cost application. The optimizations below improve perfo
 |---|-----------|-------------------|
 | 1 | App is on Netlify free tier | Check Netlify dashboard → Team Settings → Billing |
 | 2 | GitHub repo is on free plan | Check GitHub → Settings → Billing |
-| 3 | No custom domain costs | Confirm `test-feb26.netlify.app` is the only URL (no paid domain registered) |
+| 3 | No custom domain costs | Confirm `nimbus-weather-kd.netlify.app` is the only URL (no paid domain registered) |
 | 4 | Build minutes within free tier | Check Netlify dashboard → Build minutes used this month (expect <10 min/mo) |
 | 5 | Bandwidth within free tier | Check Netlify dashboard → Bandwidth used this month (expect <1GB/mo) |
 | 6 | Google Fonts weights are truly unused | Verified via Tailwind config + CSS — only weights 600/700/800 (Bricolage) and 400/500/600 (Figtree) are referenced |

@@ -4,8 +4,8 @@ Portfolio-grade client-side weather app (React 19 + Three.js + Open-Meteo). See 
 
 ## Current State
 
-- **Tests**: 97 passing (10 files, ~1.3s)
-- **Deploy**: https://test-feb26.netlify.app
+- **Tests**: 295 passing (30 files, ~3.5s)
+- **Deploy**: https://nimbus-weather-kd.netlify.app
 - **Repo**: https://github.com/KaliDenali12/nimbus-weather
 - **Status**: Full MVP complete. Error boundary, system dark mode detection, and context integration tests added.
 
