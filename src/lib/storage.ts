@@ -28,18 +28,13 @@ const DEFAULTS: UserPreferences = {
   recentCities: [],
 }
 
-function getSystemDarkMode(): boolean {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false
-  return window.matchMedia('(prefers-color-scheme: dark)')?.matches ?? false
-}
-
 export function loadPreferences(): UserPreferences {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return { ...DEFAULTS, darkModeEnabled: getSystemDarkMode() }
+    if (!raw) return { ...DEFAULTS }
     const parsed: unknown = JSON.parse(raw)
     if (typeof parsed !== 'object' || parsed === null) {
-      return { ...DEFAULTS, darkModeEnabled: getSystemDarkMode() }
+      return { ...DEFAULTS }
     }
     const obj = parsed as Record<string, unknown>
     return {
@@ -60,8 +55,8 @@ export function loadPreferences(): UserPreferences {
         : [],
     }
   } catch {
-    // Corrupted or unreadable localStorage — fall back to defaults with system dark mode
-    return { ...DEFAULTS, darkModeEnabled: getSystemDarkMode() }
+    // Corrupted or unreadable localStorage — fall back to defaults
+    return { ...DEFAULTS }
   }
 }
 
