@@ -17,13 +17,16 @@ const glConfig = { antialias: true, alpha: true }
 const canvasStyle = { background: 'transparent' }
 
 export function WeatherScene() {
-  const { weather, condition, timeOfDay } = useWeather()
+  const { weather, condition, timeOfDay, preferences } = useWeather()
 
   if (!weather) return null
 
+  const isDark = preferences.darkModeEnabled
+
   return (
     <div
-      className="fixed inset-0 z-0"
+      className={`fixed inset-0 z-0 transition-opacity duration-slow ${isDark ? 'opacity-30' : 'opacity-100'}`}
+      style={{ maskImage: 'linear-gradient(to bottom, black 35%, transparent 75%)', WebkitMaskImage: 'linear-gradient(to bottom, black 35%, transparent 75%)' }}
       role="img"
       aria-label={`3D weather scene showing ${condition} ${timeOfDay === 'night' ? 'at night' : 'during the day'}`}
     >
