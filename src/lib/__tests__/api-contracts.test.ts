@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { searchCities, fetchWeather, reverseGeocode, ApiError, clearGeocodingCache, clearForecastCache } from '../api.ts'
-import type { GeocodingResult, WeatherData, CurrentWeather, DailyForecast } from '@/types/index.ts'
+import type { GeocodingResult, CurrentWeather, DailyForecast } from '@/types/index.ts'
 
 /**
  * API Contract Tests

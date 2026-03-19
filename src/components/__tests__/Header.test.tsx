@@ -5,7 +5,7 @@ import { Header } from '../Header.tsx'
 const mockToggleUnit = vi.fn()
 const mockToggleDark = vi.fn()
 let mockPreferences = {
-  unitPreference: 'celsius' as const,
+  unitPreference: 'celsius' as 'celsius' | 'fahrenheit',
   darkModeEnabled: false,
   sceneDisabled: false,
   recentCities: [],

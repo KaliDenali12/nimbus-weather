@@ -130,6 +130,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     // Priority: URL params > recentCities[0] > geolocation > Antarctica
     const urlCity = parseCityFromUrl()
     if (urlCity) {
+      setPreferences((prev) => addRecentCity(prev, urlCity))
       await loadWeatherForCoords(urlCity.lat, urlCity.lon, urlCity.name, urlCity.country)
       return
     }
@@ -137,6 +138,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     const prefs = loadPreferences()
     const lastCity = prefs.recentCities[0]
     if (lastCity) {
+      updateUrlWithCity(lastCity)
       await loadWeatherForCoords(lastCity.lat, lastCity.lon, lastCity.name, lastCity.country)
       return
     }

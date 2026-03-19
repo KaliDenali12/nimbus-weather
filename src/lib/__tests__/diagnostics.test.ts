@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { runDiagnostics } from '@/lib/diagnostics.ts'
-import type { DiagnosticsResult, ComponentStatus } from '@/lib/diagnostics.ts'
+
 
 describe('runDiagnostics', () => {
   const originalFetch = globalThis.fetch

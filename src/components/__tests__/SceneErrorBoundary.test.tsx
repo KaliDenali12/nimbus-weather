@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import type React from 'react'
 import { SceneErrorBoundary } from '../SceneErrorBoundary.tsx'
 
-function ThrowingComponent(): JSX.Element {
+function ThrowingComponent(): React.JSX.Element {
   throw new Error('WebGL crashed')
 }
 

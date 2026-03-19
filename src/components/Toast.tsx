@@ -9,7 +9,7 @@ interface ToastProps {
 
 export function Toast({ message, duration = 5000, onDismiss }: ToastProps) {
   const [visible, setVisible] = useState(true)
-  const fadeTimerRef = useRef<ReturnType<typeof setTimeout>>()
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     return () => clearTimeout(fadeTimerRef.current)
