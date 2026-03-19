@@ -40,7 +40,7 @@ export function Forecast() {
             </div>
 
             {day.precipitationProbability > 0 && (
-              <div className="flex items-center gap-0.5" style={{ color: 'var(--color-info)' }}>
+              <div className="flex items-center gap-0.5 text-primary opacity-70">
                 <Droplets size={10} aria-hidden="true" />
                 <span className="text-caption">{day.precipitationProbability}%</span>
               </div>
