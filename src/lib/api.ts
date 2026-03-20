@@ -263,7 +263,7 @@ export async function reverseGeocode(
 ): Promise<{ name: string; country: string } | null> {
   if (!isValidCoordinate(lat, lon)) return null
 
-  const url = new URL('https://api.bigdatacloud.net/data/reverse-geocode-client')
+  const url = new URL('https://api-bdc.io/data/reverse-geocode-client')
   url.searchParams.set('latitude', String(lat))
   url.searchParams.set('longitude', String(lon))
   url.searchParams.set('localityLanguage', 'en')
