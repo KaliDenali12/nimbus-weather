@@ -161,19 +161,19 @@ Geolocation/Search → Open-Meteo API → WeatherData → WeatherContext
 | Variable | Role |
 |----------|------|
 | `--bg-gradient` | Full-page background gradient |
-| `--card-surface` | Glassmorphism card background (rgba) |
-| `--card-border` | Glassmorphism card border (rgba) |
+| `--card-surface` | Dark semi-opaque card background (rgba) |
+| `--card-border` | Card border (rgba) |
 | `--text-primary` | Primary text color |
 | `--text-secondary` | Secondary/muted text color |
 | `--color-success/warning/error/info` | Semantic status colors (static) |
 
 **Dark mode**: When enabled, overrides ALL weather themes with a single charcoal theme (`#09090b → #27272a`).
 
-### Glassmorphism Classes
+### Card & Glass Classes
 
 | Class | Key Properties |
 |-------|---------------|
-| `.glass-card` | blur(16px), border-radius: 16px, padding: 20px |
+| `.glass-card` | blur(20px), border-radius: 16px, padding: 20px, box-shadow: 0 4px 24px rgba(0,0,0,0.15) |
 | `.glass-button` | bg: white/10%, border-radius: 10px, hover: white/18% |
 | `.glass-chip` | border-radius: 20px (pill), padding: 6px 14px |
 | `.glass-input` | blur(12px), border-radius: 14px, padding: 14px 16px |

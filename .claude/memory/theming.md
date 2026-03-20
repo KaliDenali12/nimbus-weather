@@ -58,7 +58,7 @@ Snow-day is the ONLY theme where text is dark (`#1a2533`) against a light backgr
 
 | Class | Background | Blur | Radius | Padding |
 |-------|-----------|------|--------|---------|
-| .glass-card | var(--card-surface) | 16px | 16px | 20px |
+| .glass-card | var(--card-surface) | 20px | 16px | 20px |
 | .glass-button | white/10% | — | 10px | 6px 14px |
 | .glass-chip | white/10% | — | 20px | 6px 14px |
 | .glass-input | white/10% | 12px | 14px | 14px 16px |

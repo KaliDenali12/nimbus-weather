@@ -107,10 +107,10 @@ The app's biggest perceived performance problem was a full-screen spinner blocki
 - **Estimated time saved**: ~200ms head start on hover; if cached, click is instant (0ms API wait)
 - **Files modified**: `src/components/RecentCities.tsx`
 
-### Font Preloading
-- **What**: Google Fonts CSS loaded with `<link rel="preload" as="style">` + `media="print" onload="this.media='all'"` pattern
-- **How**: Browser starts downloading fonts immediately but doesn't block rendering
-- **Estimated time saved**: 100-200ms off first contentful paint
+### Font Loading
+- **What**: Google Fonts CSS loaded synchronously via standard `<link rel="stylesheet">` with `<link rel="preconnect">` hints
+- **How**: Fonts load as render-blocking to prevent FOUT (Flash of Unstyled Text) — ensures Bricolage Grotesque displays correctly on first paint
+- **Trade-off**: Adds ~100-200ms to first paint, but prevents visible font swap that was causing inconsistency between localhost and deployed builds
 - **Files modified**: `index.html`
 
 ---

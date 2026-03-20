@@ -29,82 +29,82 @@ Each weather state defines four values: background gradient, card surface color,
 | Role | Value | Usage |
 |------|-------|-------|
 | Background | `linear-gradient(135deg, #1e5faa 0%, #5b9bd5 40%, #8bbaf0 100%)` | Full-page background |
-| Card Surface | `rgba(255, 255, 255, 0.14)` | Glassmorphism card fill |
-| Card Border | `rgba(255, 255, 255, 0.12)` | Subtle card edge |
+| Card Surface | `rgba(15, 25, 50, 0.65)` | Dark semi-opaque card fill |
+| Card Border | `rgba(255, 255, 255, 0.15)` | Subtle card edge |
 | Text Primary | `#ffffff` | Headings, temperature, city name |
-| Text Secondary | `rgba(255, 255, 255, 0.7)` | Labels, metadata, secondary info |
+| Text Secondary | `rgba(255, 255, 255, 0.88)` | Labels, metadata, secondary info |
 
 #### Clear Sky (Night)
 | Role | Value | Usage |
 |------|-------|-------|
-| Background | `linear-gradient(135deg, #0b1224 0%, #1a1847 50%, #2b2670)` | Full-page background |
-| Card Surface | `rgba(255, 255, 255, 0.07)` | Glassmorphism card fill |
-| Card Border | `rgba(255, 255, 255, 0.08)` | Subtle card edge |
+| Background | `linear-gradient(135deg, #0b1224 0%, #1a1847 50%, #2b2670 100%)` | Full-page background |
+| Card Surface | `rgba(10, 15, 35, 0.70)` | Dark semi-opaque card fill |
+| Card Border | `rgba(255, 255, 255, 0.12)` | Subtle card edge |
 | Text Primary | `#e2e8f0` | Headings, temperature, city name |
-| Text Secondary | `rgba(226, 232, 240, 0.6)` | Labels, metadata |
+| Text Secondary | `rgba(226, 232, 240, 0.85)` | Labels, metadata |
 
 #### Cloudy (Day)
 | Role | Value | Usage |
 |------|-------|-------|
 | Background | `linear-gradient(135deg, #5a6a7a 0%, #8494a7 50%, #b0bec9 100%)` | Full-page background |
-| Card Surface | `rgba(255, 255, 255, 0.16)` | Glassmorphism card fill |
-| Card Border | `rgba(255, 255, 255, 0.12)` | Subtle card edge |
+| Card Surface | `rgba(15, 25, 50, 0.65)` | Dark semi-opaque card fill |
+| Card Border | `rgba(255, 255, 255, 0.15)` | Subtle card edge |
 | Text Primary | `#ffffff` | Headings, temperature |
-| Text Secondary | `rgba(255, 255, 255, 0.65)` | Labels, metadata |
+| Text Secondary | `rgba(255, 255, 255, 0.88)` | Labels, metadata |
 
 #### Cloudy (Night)
 | Role | Value | Usage |
 |------|-------|-------|
 | Background | `linear-gradient(135deg, #1a2535 0%, #2d3d50 50%, #3f5168 100%)` | Full-page background |
-| Card Surface | `rgba(255, 255, 255, 0.08)` | Glassmorphism card fill |
-| Card Border | `rgba(255, 255, 255, 0.08)` | Subtle card edge |
+| Card Surface | `rgba(10, 15, 35, 0.70)` | Dark semi-opaque card fill |
+| Card Border | `rgba(255, 255, 255, 0.12)` | Subtle card edge |
 | Text Primary | `#e2e8f0` | Headings, temperature |
-| Text Secondary | `rgba(226, 232, 240, 0.55)` | Labels, metadata |
+| Text Secondary | `rgba(226, 232, 240, 0.85)` | Labels, metadata |
 
 #### Rain (Day)
 | Role | Value | Usage |
 |------|-------|-------|
 | Background | `linear-gradient(135deg, #1c3550 0%, #2a4d6b 50%, #3f6d8c 100%)` | Full-page background |
-| Card Surface | `rgba(255, 255, 255, 0.10)` | Glassmorphism card fill |
-| Card Border | `rgba(255, 255, 255, 0.08)` | Subtle card edge |
+| Card Surface | `rgba(10, 20, 40, 0.70)` | Dark semi-opaque card fill |
+| Card Border | `rgba(255, 255, 255, 0.12)` | Subtle card edge |
 | Text Primary | `#e2e8f0` | Headings, temperature |
-| Text Secondary | `rgba(226, 232, 240, 0.6)` | Labels, metadata |
+| Text Secondary | `rgba(226, 232, 240, 0.85)` | Labels, metadata |
 
 #### Rain (Night)
 | Role | Value | Usage |
 |------|-------|-------|
 | Background | `linear-gradient(135deg, #0a1520 0%, #14202f 50%, #1c2e42 100%)` | Full-page background |
-| Card Surface | `rgba(255, 255, 255, 0.06)` | Glassmorphism card fill |
-| Card Border | `rgba(255, 255, 255, 0.06)` | Subtle card edge |
+| Card Surface | `rgba(8, 12, 25, 0.75)` | Dark semi-opaque card fill |
+| Card Border | `rgba(255, 255, 255, 0.10)` | Subtle card edge |
 | Text Primary | `#c8d6e0` | Headings, temperature |
-| Text Secondary | `rgba(200, 214, 224, 0.55)` | Labels, metadata |
+| Text Secondary | `rgba(200, 214, 224, 0.85)` | Labels, metadata |
 
 #### Snow (Day)
 | Role | Value | Usage |
 |------|-------|-------|
 | Background | `linear-gradient(135deg, #d8e4ee 0%, #c0cdd8 50%, #8a9baa 100%)` | Full-page background |
-| Card Surface | `rgba(0, 0, 0, 0.07)` | Glassmorphism card fill (dark on light) |
-| Card Border | `rgba(0, 0, 0, 0.06)` | Subtle card edge |
+| Card Surface | `rgba(255, 255, 255, 0.70)` | Light semi-opaque card fill (inverted for light bg) |
+| Card Border | `rgba(0, 0, 0, 0.08)` | Subtle card edge |
 | Text Primary | `#1a2533` | Headings, temperature (dark text on light bg) |
-| Text Secondary | `rgba(26, 37, 51, 0.6)` | Labels, metadata |
+| Text Secondary | `rgba(26, 37, 51, 0.82)` | Labels, metadata |
 
 #### Snow (Night)
 | Role | Value | Usage |
 |------|-------|-------|
 | Background | `linear-gradient(135deg, #1a2535 0%, #2d3d50 50%, #506478 100%)` | Full-page background |
-| Card Surface | `rgba(255, 255, 255, 0.08)` | Glassmorphism card fill |
-| Card Border | `rgba(255, 255, 255, 0.08)` | Subtle card edge |
+| Card Surface | `rgba(10, 15, 35, 0.70)` | Dark semi-opaque card fill |
+| Card Border | `rgba(255, 255, 255, 0.12)` | Subtle card edge |
 | Text Primary | `#e2e8f0` | Headings, temperature |
-| Text Secondary | `rgba(226, 232, 240, 0.55)` | Labels, metadata |
+| Text Secondary | `rgba(226, 232, 240, 0.85)` | Labels, metadata |
 
 #### Storm (Day/Night)
 | Role | Value | Usage |
 |------|-------|-------|
 | Background | `linear-gradient(135deg, #12121f 0%, #22223a 50%, #323252 100%)` | Full-page background |
-| Card Surface | `rgba(255, 255, 255, 0.08)` | Glassmorphism card fill |
-| Card Border | `rgba(255, 255, 255, 0.07)` | Subtle card edge |
+| Card Surface | `rgba(10, 10, 25, 0.75)` | Dark semi-opaque card fill |
+| Card Border | `rgba(255, 255, 255, 0.10)` | Subtle card edge |
 | Text Primary | `#d4d4e0` | Headings, temperature |
-| Text Secondary | `rgba(212, 212, 224, 0.55)` | Labels, metadata |
+| Text Secondary | `rgba(212, 212, 224, 0.85)` | Labels, metadata |
 
 ### Dark Mode Override
 
@@ -113,10 +113,10 @@ When dark mode is toggled on, it overrides the weather-driven palette with a sin
 | Role | Value | Usage |
 |------|-------|-------|
 | Background | `linear-gradient(135deg, #09090b 0%, #18181b 50%, #27272a 100%)` | Full-page background |
-| Card Surface | `rgba(255, 255, 255, 0.05)` | Glassmorphism card fill |
-| Card Border | `rgba(255, 255, 255, 0.06)` | Subtle card edge |
+| Card Surface | `rgba(30, 30, 35, 0.85)` | Dark semi-opaque card fill |
+| Card Border | `rgba(255, 255, 255, 0.10)` | Subtle card edge |
 | Text Primary | `#e4e4e7` | Headings, temperature |
-| Text Secondary | `rgba(228, 228, 231, 0.55)` | Labels, metadata |
+| Text Secondary | `rgba(228, 228, 231, 0.80)` | Labels, metadata |
 
 ### Semantic Colors
 
@@ -156,10 +156,12 @@ For alert banners, these semantic colors are used at full intensity as backgroun
 | Display (headings, temperature, city name) | **Bricolage Grotesque** | [Google Fonts](https://fonts.google.com/specimen/Bricolage+Grotesque) | Bold, editorial presence. Variable weight support (200–800). Has personality without being eccentric — feels like a magazine headline, which gives authority to simple weather data. |
 | Body (labels, descriptions, metadata) | **Figtree** | [Google Fonts](https://fonts.google.com/specimen/Figtree) | Clean, modern, excellent readability at small sizes. Slightly warm character that pairs well with Bricolage's boldness without competing. Variable weight support (300–700). |
 
-**Loading:** Import both via Google Fonts with `display=swap` to prevent layout shift while fonts load.
+**Loading:** Import both via Google Fonts synchronously with `display=swap` and `preconnect` hints. Fonts are loaded as render-blocking to prevent FOUT (Flash of Unstyled Text).
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet" />
 ```
 
 ### Type Scale
@@ -244,7 +246,7 @@ The primary container component. Used for current weather, forecast, chart, and 
 | Property | Value |
 |----------|-------|
 | Background | Weather-driven card surface color (see palette) |
-| Backdrop Filter | `blur(16px)` |
+| Backdrop Filter | `blur(20px)` |
 | Border | 1px solid, weather-driven card border color |
 | Border Radius | 16px |
 | Padding | 20px |
@@ -350,11 +352,11 @@ Used for geolocation denial message and similar feedback.
 
 ### Component Do's and Don'ts
 
-- **DO** apply `backdrop-filter: blur(16px)` on every glass card — without it, the transparent background looks like a bug
+- **DO** apply `backdrop-filter: blur(20px)` on every glass card — without it, the transparent background looks like a bug
 - **DO** keep all interactive elements (buttons, chips, search) visually consistent — same glass treatment, same border style
 - **DO** use the same border radius within a component group (all buttons = 10px, all cards = 16px, all chips = 20px)
-- **DON'T** add drop shadows on glassmorphism cards — the blur effect creates its own depth
-- **DON'T** use solid/opaque cards — they block the 3D scene and break the atmospheric effect
+- **DO** add a subtle box-shadow (`0 4px 24px rgba(0, 0, 0, 0.15)`) on glass cards for depth
+- **DON'T** use fully opaque cards — they block the 3D scene and break the atmospheric effect
 - **DON'T** mix glass-style and solid-style components on the same screen — pick one visual language
 
 ## States & Interactions
@@ -530,10 +532,10 @@ Emergency:   rgba(248, 113, 113, 0.2)   border: rgba(248, 113, 113, 0.4)
 ### Dark Mode Override
 ```
 Background:  linear-gradient(135deg, #09090b, #18181b, #27272a)
-Card:        rgba(255, 255, 255, 0.05)
-Border:      rgba(255, 255, 255, 0.06)
+Card:        rgba(30, 30, 35, 0.85)
+Border:      rgba(255, 255, 255, 0.10)
 Text:        #e4e4e7
-Text Sec:    rgba(228, 228, 231, 0.55)
+Text Sec:    rgba(228, 228, 231, 0.80)
 ```
 
 ### Typography
@@ -574,18 +576,17 @@ Alert:         12px
 ### Glassmorphism Recipe
 ```css
 background: var(--card-surface);
-backdrop-filter: blur(16px);
--webkit-backdrop-filter: blur(16px);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
 border: 1px solid var(--card-border);
 border-radius: 16px;
+box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 ```
 
 ### Shadows
 ```
-None — glassmorphism cards do not use box-shadow.
-The backdrop-filter blur creates depth.
-Exception: forecast card hover gets a subtle shadow:
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15)
+All glass cards: box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15)
+Forecast card hover: box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15)
 ```
 
 ### Transitions

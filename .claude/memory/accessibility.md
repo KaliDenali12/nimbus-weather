@@ -53,12 +53,12 @@
 - Most themes: white text on blue/dark gradient — high contrast
 - Snow-day: dark text (#1a2533) on light background (#d8e4ee) — adequate contrast
 - Dark mode: light text (#e4e4e7) on dark background (#09090b) — high contrast
-- Secondary text: reduced opacity (0.5–0.7) — may need review for WCAG AA
+- Secondary text: opacity 0.82–0.88 across all themes — improved from 0.5–0.7 for better readability
 
 ## Gaps / Future Work
 
 - No skip-to-content link
 - No axe-core automated testing in CI
-- Secondary text contrast ratios not formally verified
+- Secondary text contrast improved (0.82–0.88 opacity) but not formally verified with tools
 - No screen reader testing performed
 - Alert severity colors may not meet contrast requirements on all themes
