@@ -7,6 +7,7 @@ import type { WeatherData } from '@/types/index.ts'
 // Mock API module
 vi.mock('@/lib/api.ts', () => ({
   fetchWeather: vi.fn(),
+  reverseGeocode: vi.fn(),
   searchCities: vi.fn(),
 }))
 
@@ -35,7 +36,7 @@ vi.mock('@/lib/theme.ts', () => ({
   applyTheme: vi.fn(),
 }))
 
-import { fetchWeather, searchCities } from '@/lib/api.ts'
+import { fetchWeather, reverseGeocode } from '@/lib/api.ts'
 import { getUserLocation } from '@/lib/geolocation.ts'
 
 const mockWeatherData: WeatherData = {
@@ -111,9 +112,7 @@ describe('WeatherContext', () => {
       ok: true,
       position: { latitude: 35.68, longitude: 139.69 },
     })
-    vi.mocked(searchCities).mockResolvedValue([
-      { id: 1, name: 'Tokyo', latitude: 35.68, longitude: 139.69, country: 'Japan', country_code: 'JP' },
-    ])
+    vi.mocked(reverseGeocode).mockResolvedValue({ name: 'Tokyo', country: 'Japan' })
     vi.mocked(fetchWeather).mockResolvedValue(mockWeatherData)
 
     render(
@@ -160,7 +159,7 @@ describe('WeatherContext', () => {
       ok: true,
       position: { latitude: 35.68, longitude: 139.69 },
     })
-    vi.mocked(searchCities).mockResolvedValue([])
+    vi.mocked(reverseGeocode).mockResolvedValue(null)
     vi.mocked(fetchWeather).mockRejectedValue(new Error('Network error'))
 
     render(
@@ -181,7 +180,7 @@ describe('WeatherContext', () => {
       ok: true,
       position: { latitude: 0, longitude: 0 },
     })
-    vi.mocked(searchCities).mockResolvedValue([])
+    vi.mocked(reverseGeocode).mockResolvedValue(null)
     vi.mocked(fetchWeather).mockResolvedValue(mockWeatherData)
 
     render(
@@ -208,7 +207,7 @@ describe('WeatherContext', () => {
       ok: true,
       position: { latitude: 0, longitude: 0 },
     })
-    vi.mocked(searchCities).mockResolvedValue([])
+    vi.mocked(reverseGeocode).mockResolvedValue(null)
     vi.mocked(fetchWeather).mockResolvedValue(mockWeatherData)
 
     render(
@@ -235,7 +234,7 @@ describe('WeatherContext', () => {
       ok: true,
       position: { latitude: 0, longitude: 0 },
     })
-    vi.mocked(searchCities).mockResolvedValue([])
+    vi.mocked(reverseGeocode).mockResolvedValue(null)
     vi.mocked(fetchWeather)
       .mockResolvedValueOnce(mockWeatherData)
       .mockResolvedValueOnce({
@@ -269,7 +268,7 @@ describe('WeatherContext', () => {
       ok: true,
       position: { latitude: 0, longitude: 0 },
     })
-    vi.mocked(searchCities).mockResolvedValue([])
+    vi.mocked(reverseGeocode).mockResolvedValue(null)
     vi.mocked(fetchWeather).mockResolvedValue(mockWeatherData)
 
     render(
@@ -295,7 +294,7 @@ describe('WeatherContext', () => {
       ok: true,
       position: { latitude: 0, longitude: 0 },
     })
-    vi.mocked(searchCities).mockResolvedValue([])
+    vi.mocked(reverseGeocode).mockResolvedValue(null)
     vi.mocked(fetchWeather).mockResolvedValue(mockWeatherData)
 
     render(

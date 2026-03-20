@@ -424,7 +424,8 @@ describe('fetchWeather: Response Contract', () => {
 describe('reverseGeocode: Response Contract', () => {
   it('returns {name, country} for valid response', async () => {
     mockFetchResponse({
-      results: [{ name: 'Tokyo', country: 'Japan', latitude: 35.68, longitude: 139.69 }],
+      city: 'Tokyo',
+      countryName: 'Japan',
     })
 
     const result = await reverseGeocode(35.68, 139.69)
@@ -436,19 +437,18 @@ describe('reverseGeocode: Response Contract', () => {
     expect(typeof result!.country).toBe('string')
   })
 
-  it('constructs URL with rounded coordinates and count=1', async () => {
-    const spy = mockFetchResponse({ results: [] })
+  it('constructs URL with coordinates as query parameters', async () => {
+    const spy = mockFetchResponse({ city: 'Test' })
 
     await reverseGeocode(35.6895, 139.6917)
 
     const calledUrl = spy.mock.calls[0]![0] as string
     const url = new URL(calledUrl)
 
-    expect(url.origin).toBe('https://geocoding-api.open-meteo.com')
-    expect(url.pathname).toBe('/v1/search')
-    expect(url.searchParams.get('count')).toBe('1')
-    expect(url.searchParams.get('name')).toContain('35.7')
-    expect(url.searchParams.get('name')).toContain('139.7')
+    expect(url.origin).toBe('https://api.bigdatacloud.net')
+    expect(url.pathname).toBe('/data/reverse-geocode-client')
+    expect(url.searchParams.get('latitude')).toBe('35.6895')
+    expect(url.searchParams.get('longitude')).toBe('139.6917')
   })
 
   it('returns null for non-ok response (does not throw)', async () => {
@@ -465,8 +465,8 @@ describe('reverseGeocode: Response Contract', () => {
     expect(result).toBeNull()
   })
 
-  it('defaults country to empty string when Open-Meteo omits it', async () => {
-    mockFetchResponse({ results: [{ name: 'Unknown Place' }] })
+  it('defaults country to empty string when countryName is missing', async () => {
+    mockFetchResponse({ city: 'Unknown Place' })
 
     const result = await reverseGeocode(0, 0)
     expect(result!.country).toBe('')

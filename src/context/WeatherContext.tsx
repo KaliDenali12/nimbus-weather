@@ -16,7 +16,7 @@ import type {
   TimeOfDay,
   GeocodingResult,
 } from '@/types/index.ts'
-import { fetchWeather, searchCities } from '@/lib/api.ts'
+import { fetchWeather, reverseGeocode, searchCities } from '@/lib/api.ts'
 import { getUserLocation, ANTARCTICA } from '@/lib/geolocation.ts'
 import {
   loadPreferences,
@@ -149,22 +149,15 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     const result = await getUserLocation()
 
     if (result.ok) {
-      // Try to get a city name for these coords via the API
+      // Try to get a city name for these coords via reverse geocoding
       const { latitude, longitude } = result.position
-      try {
-        const nearby = await searchCities(
-          `${latitude.toFixed(2)} ${longitude.toFixed(2)}`,
-        )
-        const city = nearby[0]
-        await loadWeatherForCoords(
-          latitude,
-          longitude,
-          city?.name ?? 'Your Location',
-          city?.country ?? '',
-        )
-      } catch {
-        await loadWeatherForCoords(latitude, longitude, 'Your Location', '')
-      }
+      const location = await reverseGeocode(latitude, longitude)
+      await loadWeatherForCoords(
+        latitude,
+        longitude,
+        location?.name ?? 'Your Location',
+        location?.country ?? '',
+      )
     } else {
       setGeoError(result.error)
       // Fall back to Antarctica

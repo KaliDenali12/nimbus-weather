@@ -4,6 +4,7 @@ import type { WeatherData } from '@/types/index.ts'
 
 vi.mock('@/lib/api.ts', () => ({
   fetchWeather: vi.fn(),
+  reverseGeocode: vi.fn(),
   searchCities: vi.fn(),
 }))
 
@@ -34,7 +35,7 @@ vi.mock('@/scenes/WeatherScene.tsx', () => ({
 }))
 
 import { App } from '@/App.tsx'
-import { fetchWeather, searchCities } from '@/lib/api.ts'
+import { fetchWeather, reverseGeocode, searchCities } from '@/lib/api.ts'
 import { getUserLocation } from '@/lib/geolocation.ts'
 import { applyTheme, getTheme } from '@/lib/theme.ts'
 
@@ -73,9 +74,7 @@ function setupSuccessfulGeo() {
     ok: true,
     position: { latitude: 35.68, longitude: 139.69 },
   })
-  vi.mocked(searchCities).mockResolvedValue([
-    { id: 1, name: 'Tokyo', latitude: 35.68, longitude: 139.69, country: 'Japan', country_code: 'JP' },
-  ])
+  vi.mocked(reverseGeocode).mockResolvedValue({ name: 'Tokyo', country: 'Japan' })
   vi.mocked(fetchWeather).mockResolvedValue(tokyoWeather)
 }
 
@@ -187,7 +186,7 @@ describe('Integration: Full User Workflow', () => {
       ok: true,
       position: { latitude: 35.68, longitude: 139.69 },
     })
-    vi.mocked(searchCities).mockResolvedValue([])
+    vi.mocked(reverseGeocode).mockResolvedValue(null)
     vi.mocked(fetchWeather).mockRejectedValueOnce(new Error('Server down'))
 
     render(<App />)
@@ -199,9 +198,7 @@ describe('Integration: Full User Workflow', () => {
 
     // Fix the API and retry
     vi.mocked(fetchWeather).mockResolvedValue(tokyoWeather)
-    vi.mocked(searchCities).mockResolvedValue([
-      { id: 1, name: 'Tokyo', latitude: 35.68, longitude: 139.69, country: 'Japan', country_code: 'JP' },
-    ])
+    vi.mocked(reverseGeocode).mockResolvedValue({ name: 'Tokyo', country: 'Japan' })
 
     fireEvent.click(screen.getByText('Try Again'))
 

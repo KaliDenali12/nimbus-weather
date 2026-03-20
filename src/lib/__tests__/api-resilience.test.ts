@@ -121,7 +121,7 @@ describe('Fetch Timeouts', () => {
   it('reverseGeocode passes AbortSignal.timeout to fetch', async () => {
     const spy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ results: [] }),
+      json: () => Promise.resolve({ city: 'Test' }),
     } as Response)
 
     await reverseGeocode(0, 0)

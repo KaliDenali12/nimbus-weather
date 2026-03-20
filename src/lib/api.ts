@@ -256,27 +256,25 @@ export async function fetchWeather(
   return result
 }
 
-/** Reverse geocode coordinates to city name using Open-Meteo */
+/** Reverse geocode coordinates to city name using BigDataCloud (free, no API key) */
 export async function reverseGeocode(
   lat: number,
   lon: number,
 ): Promise<{ name: string; country: string } | null> {
   if (!isValidCoordinate(lat, lon)) return null
 
-  // Open-Meteo doesn't have a reverse geocoding endpoint,
-  // so we search with coords rounded to get the nearest city.
-  const url = new URL(GEOCODING_URL)
-  url.searchParams.set('name', `${lat.toFixed(1)},${lon.toFixed(1)}`)
-  url.searchParams.set('count', '1')
-  url.searchParams.set('language', 'en')
-  url.searchParams.set('format', 'json')
+  const url = new URL('https://api.bigdatacloud.net/data/reverse-geocode-client')
+  url.searchParams.set('latitude', String(lat))
+  url.searchParams.set('longitude', String(lon))
+  url.searchParams.set('localityLanguage', 'en')
 
   try {
     const res = await fetch(url.toString(), { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) })
     if (!res.ok) return null
-    const data: GeocodingApiResponse = await res.json()
-    const result = data.results?.[0]
-    if (result) return { name: result.name, country: result.country ?? '' }
+    const data = await res.json()
+    const name = data.city || data.locality || data.principalSubdivision || ''
+    const country = data.countryName ?? ''
+    if (name) return { name, country }
   } catch {
     // Non-critical: reverse geocode is a best-effort enhancement for location names
   }
