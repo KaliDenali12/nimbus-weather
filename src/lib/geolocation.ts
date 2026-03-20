@@ -35,7 +35,7 @@ export async function getUserLocation(): Promise<
         }
       },
       {
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
         timeout: GEOLOCATION_TIMEOUT,
         maximumAge: 300000, // 5 min cache
       },
