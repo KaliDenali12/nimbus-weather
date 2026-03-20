@@ -57,7 +57,7 @@ export function TemperatureChart() {
 
       <div className="h-[200px] w-full" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 5, right: 5, left: -10, bottom: 8 }}>
             <defs>
               <linearGradient id="highGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.3} />
