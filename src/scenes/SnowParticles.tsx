@@ -4,7 +4,11 @@ import * as THREE from 'three'
 
 const COUNT = 600
 
-export function SnowParticles() {
+interface SnowParticlesProps {
+  windSpeed?: number
+}
+
+export function SnowParticles({ windSpeed = 0 }: SnowParticlesProps) {
   const ref = useRef<THREE.Points>(null)
 
   const geometry = useMemo(() => {
@@ -27,6 +31,7 @@ export function SnowParticles() {
     const posArr = posAttr.array as Float32Array
     for (let i = 0; i < COUNT; i++) {
       posArr[i * 3] += Math.sin(t + i) * 0.002
+      posArr[i * 3] += windSpeed * 0.005
       posArr[i * 3 + 1] -= 0.02
       if (posArr[i * 3 + 1] < -1) {
         posArr[i * 3 + 1] = 15

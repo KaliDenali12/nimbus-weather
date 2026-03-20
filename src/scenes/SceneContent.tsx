@@ -8,6 +8,11 @@ import { SnowParticles } from '@/scenes/SnowParticles.tsx'
 import { SimpleCloud } from '@/scenes/SimpleCloud.tsx'
 import { Ground } from '@/scenes/Ground.tsx'
 import { DioramaObjects } from '@/scenes/DioramaObjects.tsx'
+import { LeafParticles } from '@/scenes/LeafParticles.tsx'
+import { DustParticles } from '@/scenes/DustParticles.tsx'
+import { FireflyParticles } from '@/scenes/FireflyParticles.tsx'
+import { FogParticles } from '@/scenes/FogParticles.tsx'
+import { LightningFlash } from '@/scenes/LightningFlash.tsx'
 
 const RAIN_INTENSITY: Record<string, number> = {
   storm: 1500,
@@ -34,6 +39,11 @@ export default function SceneContent({ condition, timeOfDay, reducedMotion }: Sc
   const isRain = condition === 'rain' || condition === 'drizzle' || condition === 'storm'
   const isSnow = condition === 'snow'
   const showClouds = condition === 'cloudy' || condition === 'partly-cloudy' || condition === 'foggy' || isRain
+  const showLeaves = condition === 'clear' || condition === 'partly-cloudy' || condition === 'cloudy' || condition === 'drizzle'
+  const showDust = (condition === 'clear' || condition === 'partly-cloudy') && !isNight
+  const showFireflies = (condition === 'clear' || condition === 'partly-cloudy') && isNight
+  const showFog = condition === 'foggy' || condition === 'storm'
+  const showLightning = condition === 'storm'
 
   const ambientIntensity = useMemo(() => {
     if (isNight) return 0.15
@@ -95,17 +105,51 @@ export default function SceneContent({ condition, timeOfDay, reducedMotion }: Sc
       )}
 
       {isRain && !reducedMotion && <RainParticles intensity={rainIntensity} />}
-      {isSnow && !reducedMotion && <SnowParticles />}
+      {isSnow && !reducedMotion && <SnowParticles windSpeed={0} />}
+
+      {showLeaves && !reducedMotion && (
+        <LeafParticles
+          intensity={condition === 'cloudy' ? 70 : condition === 'partly-cloudy' ? 50 : condition === 'drizzle' ? 30 : 40}
+          speed={condition === 'cloudy' ? 1.0 : condition === 'partly-cloudy' ? 0.5 : condition === 'drizzle' ? 0.4 : 0.3}
+          reducedMotion={reducedMotion}
+        />
+      )}
+
+      {showDust && !reducedMotion && (
+        <DustParticles
+          count={condition === 'clear' ? 150 : 100}
+          reducedMotion={reducedMotion}
+        />
+      )}
+
+      {showFireflies && !reducedMotion && (
+        <FireflyParticles
+          count={condition === 'clear' ? 50 : 30}
+          reducedMotion={reducedMotion}
+        />
+      )}
+
+      {showFog && !reducedMotion && (
+        <FogParticles
+          density={condition === 'foggy' ? 200 : 80}
+          speed={condition === 'foggy' ? 0.3 : 0.6}
+          reducedMotion={reducedMotion}
+        />
+      )}
+
+      {showLightning && !reducedMotion && (
+        <LightningFlash frequency={5} reducedMotion={reducedMotion} />
+      )}
 
       {condition === 'clear' && !isNight && (
-        <mesh position={[5, 7, -8]}>
+        <mesh position={[7, 6, -4]}>
           <sphereGeometry args={[0.8, 16, 16]} />
           <meshBasicMaterial color="#ffd700" transparent opacity={0.8} />
         </mesh>
       )}
 
       {condition === 'clear' && isNight && (
-        <mesh position={[-4, 6, -6]}>
+        <mesh position={[6, 5, -3]}>
           <sphereGeometry args={[0.5, 16, 16]} />
           <meshBasicMaterial color="#dde4f0" transparent opacity={0.9} />
         </mesh>

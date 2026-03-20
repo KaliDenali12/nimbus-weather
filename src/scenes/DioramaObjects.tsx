@@ -28,10 +28,10 @@ function Tree({ position, scale = 1, canopyColor }: { position: [number, number,
   )
 }
 
-/** Simple house */
-function House({ position }: { position: [number, number, number] }) {
+/** Simple house with optional uniform scale */
+function House({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   return (
-    <group position={position}>
+    <group position={position} scale={scale}>
       {/* Walls */}
       <mesh position={[0, 0.4, 0]}>
         <boxGeometry args={[1, 0.8, 0.8]} />
@@ -64,28 +64,19 @@ export function DioramaObjects({ condition, isNight: _isNight }: DioramaObjectsP
 
   return (
     <group>
-      {/* Trees */}
-      {treeColor ? (
-        // Snow-covered trees: override canopy color
-        <group>
-          <Tree position={[-3, -0.5, -2]} scale={0.9} canopyColor={treeColor} />
-          <Tree position={[-1.5, -0.5, -4]} scale={1.1} canopyColor={treeColor} />
-          <Tree position={[2, -0.5, -3]} scale={1.0} canopyColor={treeColor} />
-          <Tree position={[4, -0.5, -1]} scale={0.8} canopyColor={treeColor} />
-          <Tree position={[-2, -0.5, 1]} scale={1.0} canopyColor={treeColor} />
-        </group>
-      ) : (
-        <>
-          <Tree position={[-3, -0.5, -2]} scale={0.9} />
-          <Tree position={[-1.5, -0.5, -4]} scale={1.1} />
-          <Tree position={[2, -0.5, -3]} />
-          <Tree position={[4, -0.5, -1]} scale={0.8} />
-          <Tree position={[-2, -0.5, 1]} scale={1.0} />
-        </>
-      )}
+      {/* LEFT SIDE — house + trees pushed to x < -4 */}
+      <House position={[-5.5, -0.5, 0.5]} />
+      <Tree position={[-7, -0.5, -1]} scale={1.0} canopyColor={treeColor} />
+      <Tree position={[-6, -0.5, 1.5]} scale={0.9} canopyColor={treeColor} />
+      <Tree position={[-4.5, -0.5, -2]} scale={1.1} canopyColor={treeColor} />
+      <Tree position={[-4, -0.5, 0]} scale={0.8} canopyColor={treeColor} />
 
-      {/* House */}
-      <House position={[0.5, -0.5, -1]} />
+      {/* RIGHT SIDE — house + trees pushed to x > 4 */}
+      <House position={[5.5, -0.5, 0]} scale={0.9} />
+      <Tree position={[4.5, -0.5, -1.5]} scale={0.9} canopyColor={treeColor} />
+      <Tree position={[5, -0.5, 1]} scale={1.0} canopyColor={treeColor} />
+      <Tree position={[6.5, -0.5, -0.5]} scale={1.1} canopyColor={treeColor} />
+      <Tree position={[7, -0.5, 1.5]} scale={0.8} canopyColor={treeColor} />
     </group>
   )
 }
