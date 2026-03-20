@@ -263,20 +263,26 @@ export async function reverseGeocode(
 ): Promise<{ name: string; country: string } | null> {
   if (!isValidCoordinate(lat, lon)) return null
 
-  const url = new URL('https://api-bdc.io/data/reverse-geocode-client')
+  const url = new URL('https://api.bigdatacloud.net/data/reverse-geocode-client')
   url.searchParams.set('latitude', String(lat))
   url.searchParams.set('longitude', String(lon))
   url.searchParams.set('localityLanguage', 'en')
 
   try {
-    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) })
-    if (!res.ok) return null
+    const res = await fetch(url.toString(), {
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      redirect: 'follow',
+    })
+    if (!res.ok) {
+      console.warn(`[Nimbus] Reverse geocode failed: HTTP ${res.status}`)
+      return null
+    }
     const data = await res.json()
     const name = data.city || data.locality || data.principalSubdivision || ''
     const country = data.countryName ?? ''
     if (name) return { name, country }
-  } catch {
-    // Non-critical: reverse geocode is a best-effort enhancement for location names
+  } catch (e) {
+    console.warn('[Nimbus] Reverse geocode error:', e)
   }
   return null
 }

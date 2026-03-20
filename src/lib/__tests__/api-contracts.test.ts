@@ -445,7 +445,7 @@ describe('reverseGeocode: Response Contract', () => {
     const calledUrl = spy.mock.calls[0]![0] as string
     const url = new URL(calledUrl)
 
-    expect(url.origin).toBe('https://api-bdc.io')
+    expect(url.origin).toBe('https://api.bigdatacloud.net')
     expect(url.pathname).toBe('/data/reverse-geocode-client')
     expect(url.searchParams.get('latitude')).toBe('35.6895')
     expect(url.searchParams.get('longitude')).toBe('139.6917')

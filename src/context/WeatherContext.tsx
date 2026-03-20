@@ -149,15 +149,29 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     const result = await getUserLocation()
 
     if (result.ok) {
-      // Try to get a city name for these coords via reverse geocoding
       const { latitude, longitude } = result.position
       const location = await reverseGeocode(latitude, longitude)
+      const locationName = location?.name ?? ''
+      const locationCountry = location?.country ?? ''
+      // Load weather — use reverse-geocoded name, or placeholder that gets patched below
       await loadWeatherForCoords(
         latitude,
         longitude,
-        location?.name ?? 'Your Location',
-        location?.country ?? '',
+        locationName || 'Your Location',
+        locationCountry,
       )
+      // If reverse geocoding failed, try to derive a name from the timezone
+      if (!locationName) {
+        setWeather((prev) => {
+          if (!prev || prev.location.name !== 'Your Location') return prev
+          const tz = prev.location.timezone
+          if (!tz || !tz.includes('/')) return prev
+          const parts = tz.split('/')
+          const derived = (parts[parts.length - 1] ?? '').replace(/_/g, ' ')
+          if (!derived) return prev
+          return { ...prev, location: { ...prev.location, name: derived } }
+        })
+      }
     } else {
       setGeoError(result.error)
       // Fall back to Antarctica
