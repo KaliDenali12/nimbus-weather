@@ -4,10 +4,10 @@
 
 :root {
   --bg-gradient: linear-gradient(135deg, #1e5faa 0%, #5b9bd5 40%, #8bbaf0 100%);
-  --card-surface: rgba(255, 255, 255, 0.14);
-  --card-border: rgba(255, 255, 255, 0.12);
+  --card-surface: rgba(15, 25, 50, 0.65);
+  --card-border: rgba(255, 255, 255, 0.15);
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-secondary: rgba(255, 255, 255, 0.88);
 
   --color-success: #34d399;
   --color-warning: #fbbf24;
@@ -50,11 +50,12 @@ body {
 @layer components {
   .glass-card {
     background: var(--card-surface);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--card-border);
     border-radius: 16px;
     padding: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
     transition: background 600ms ease, border-color 600ms ease;
   }
 
