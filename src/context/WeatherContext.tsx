@@ -17,7 +17,7 @@ import type {
   GeocodingResult,
 } from '@/types/index.ts'
 import { fetchWeather, reverseGeocode, searchCities } from '@/lib/api.ts'
-import { getUserLocation, ANTARCTICA } from '@/lib/geolocation.ts'
+import { getUserLocation, getIpLocation, ANTARCTICA } from '@/lib/geolocation.ts'
 import {
   loadPreferences,
   savePreferences,
@@ -173,8 +173,15 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
         })
       }
     } else {
+      // Browser geolocation failed — try IP-based location before Antarctica
+      if (result.error !== 'denied') {
+        const ipLoc = await getIpLocation()
+        if (ipLoc) {
+          await loadWeatherForCoords(ipLoc.latitude, ipLoc.longitude, ipLoc.name, ipLoc.country)
+          return
+        }
+      }
       setGeoError(result.error)
-      // Fall back to Antarctica
       await loadWeatherForCoords(
         ANTARCTICA.latitude,
         ANTARCTICA.longitude,

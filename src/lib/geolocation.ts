@@ -1,8 +1,15 @@
-const GEOLOCATION_TIMEOUT = 8000
+const GEOLOCATION_TIMEOUT = 5000
 
 export interface GeoPosition {
   latitude: number
   longitude: number
+}
+
+export interface IpLocation {
+  latitude: number
+  longitude: number
+  name: string
+  country: string
 }
 
 export type GeoError = 'denied' | 'unavailable' | 'timeout'
@@ -41,6 +48,27 @@ export async function getUserLocation(): Promise<
       },
     )
   })
+}
+
+/** IP-based geolocation via BigDataCloud — more accurate than browser IP geolocation for many ISPs */
+export async function getIpLocation(): Promise<IpLocation | null> {
+  try {
+    const res = await fetch(
+      'https://api.bigdatacloud.net/data/reverse-geocode-client?localityLanguage=en',
+      { signal: AbortSignal.timeout(GEOLOCATION_TIMEOUT), redirect: 'follow' },
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    const lat = data.latitude
+    const lon = data.longitude
+    if (typeof lat !== 'number' || typeof lon !== 'number') return null
+    const name = data.city || data.locality || data.principalSubdivision || ''
+    const country = data.countryName ?? ''
+    if (!name) return null
+    return { latitude: lat, longitude: lon, name, country }
+  } catch {
+    return null
+  }
 }
 
 // Antarctica fallback coordinates
